@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -124,13 +123,13 @@ public class ModulesFragment extends Fragment {
         cancel.setOnClickListener(view -> dialog.dismiss());
         new Thread(() -> {
             try {
-                Boolean inet  = new CheckInet().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                Boolean inet  = new CheckInet().execute().get();
                 if (inet){
                     activity.runOnUiThread(dialog::dismiss);
                 }else{
                     activity.runOnUiThread(dialog::show);
                     boolean o = core.remountcore();
-                        inet  = new CheckInet().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                        inet  = new CheckInet().execute().get();
                         if (inet){
                             activity.runOnUiThread(dialog::dismiss);
                         }else {

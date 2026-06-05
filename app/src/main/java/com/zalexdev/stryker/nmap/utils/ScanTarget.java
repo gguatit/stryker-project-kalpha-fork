@@ -5,7 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -23,7 +23,7 @@ import java.util.TimerTask;
 /**
  * This class is used to scan a target
  */
-public class ScanTarget extends AsyncTask<Void, String, Boolean> {
+public class ScanTarget extends StrykerTask<String, Boolean> {
     public String exec = Core.EXECUTE;
     public String ip;
     public Activity activity;
@@ -37,16 +37,9 @@ public class ScanTarget extends AsyncTask<Void, String, Boolean> {
         activity = a;
         output = o;
         settings = s;
-    }
-
+    }    @SuppressLint("WrongThread")
     @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
-    @SuppressLint("WrongThread")
-    @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         String line;
         Boolean ok = false;
         try {
@@ -119,10 +112,7 @@ public class ScanTarget extends AsyncTask<Void, String, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
-    }
+    protected void onProgress(String value) {}
 
 
 }

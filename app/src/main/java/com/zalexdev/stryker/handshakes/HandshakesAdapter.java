@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,7 +92,7 @@ public class HandshakesAdapter extends RecyclerView.Adapter<HandshakesAdapter.Vi
                                         adapter.brute.setVisibility(View.VISIBLE);
                                     });
                                 });
-                                WiFINetwork w = br.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                                WiFINetwork w = br.execute().get();
                                 activity.runOnUiThread(() -> {
                                     adapter.brute.setVisibility(View.VISIBLE);
                                     adapter.cancel.setVisibility(View.GONE);
@@ -130,7 +129,7 @@ public class HandshakesAdapter extends RecyclerView.Adapter<HandshakesAdapter.Vi
                 new Thread(() -> {
                     try {
 
-                        Integer upload = new UploadHS(hslist.get(position).replace("/storage/emulated/0/","/sdcard/"),email,context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                        Integer upload = new UploadHS(hslist.get(position).replace("/storage/emulated/0/","/sdcard/"),email,context).execute().get();
                         activity.runOnUiThread(() -> {
                             if (upload == 0){
                                 core.toaster(core.str("error_upload"));

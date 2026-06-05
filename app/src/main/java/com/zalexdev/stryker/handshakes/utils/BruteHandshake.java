@@ -10,7 +10,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.os.Build;
 import android.util.Log;
 import android.widget.TextView;
@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 /**
  * This class is used to run the aircrack-ng and brute handshake
  */
-public class BruteHandshake extends AsyncTask<Void, String, WiFINetwork> {
+public class BruteHandshake extends StrykerTask<String, WiFINetwork> {
     public String exec = Core.EXECUTE;
     public String path;
     public String wordlist;
@@ -58,15 +58,9 @@ public class BruteHandshake extends AsyncTask<Void, String, WiFINetwork> {
         id = i;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected WiFINetwork doInBackground(Void... command) {
+    protected WiFINetwork doInBackground() {
         String line;
         WiFINetwork result = new WiFINetwork();
         try {
@@ -82,7 +76,7 @@ public class BruteHandshake extends AsyncTask<Void, String, WiFINetwork> {
             BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
             while ((line = br.readLine()) != null) {
                 out2.add(line);
-                onProgressUpdate(line);
+                publish(line);
                 if (line.contains("\u001B[11B\u001B[8;28H\u001B[2KKEY FOUND! [ ")) {
                     result.setPsk(line.replace("\u001B[11B\u001B[8;28H\u001B[2KKEY FOUND! [ ", "").replace(" ]", "").replaceAll("\\s+", ""));
                     result.setOK(true);
@@ -114,9 +108,6 @@ public class BruteHandshake extends AsyncTask<Void, String, WiFINetwork> {
 
     @Override
     protected void onPostExecute(WiFINetwork result) {
-        super.onPostExecute(result);
-
-
     }
 
     public void kill() {
@@ -126,15 +117,14 @@ public class BruteHandshake extends AsyncTask<Void, String, WiFINetwork> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
+    protected void onProgress(String value) {
         activity.runOnUiThread(() -> {
 
             String rem = "";
-            Matcher matcher = Pattern.compile("\\d+/\\d+").matcher(values[0]);
-            Matcher matcher2 = Pattern.compile("\\d+ hours").matcher(values[0]);
-            Matcher matcher3 = Pattern.compile("\\d+ minutes").matcher(values[0]);
-            Matcher matcher4 = Pattern.compile("\\d+ seconds").matcher(values[0]);
+            Matcher matcher = Pattern.compile("\\d+/\\d+").matcher(value);
+            Matcher matcher2 = Pattern.compile("\\d+ hours").matcher(value);
+            Matcher matcher3 = Pattern.compile("\\d+ minutes").matcher(value);
+            Matcher matcher4 = Pattern.compile("\\d+ seconds").matcher(value);
             if (matcher2.find()) {
                 rem = rem + matcher2.group(0) + " ";
             }
@@ -168,7 +158,7 @@ public class BruteHandshake extends AsyncTask<Void, String, WiFINetwork> {
         String CHANNEL_ID = "BruteForce";
         NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, "BruteForce", NotificationManager.IMPORTANCE_LOW);
 
-        NotificationCompat.Builder b = new NotificationCompat.Builder(context);
+        NotificationCompat.Builder b = new NotificationCompat.Builder(context, "stryker_channel");
 
         b.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)

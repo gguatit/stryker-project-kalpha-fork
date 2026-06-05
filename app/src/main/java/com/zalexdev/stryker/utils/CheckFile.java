@@ -3,7 +3,7 @@ package com.zalexdev.stryker.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -15,7 +15,7 @@ import java.io.OutputStream;
 /**
  * Checks if a file exists on the device
  */
-public class CheckFile extends AsyncTask<Void, String, Boolean> {
+public class CheckFile extends StrykerTask<String, Boolean> {
 
 
     public String path;
@@ -24,15 +24,9 @@ public class CheckFile extends AsyncTask<Void, String, Boolean> {
         path = path1;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         String line;
         boolean result = false;
         Logger logger = new Logger();
@@ -58,7 +52,7 @@ public class CheckFile extends AsyncTask<Void, String, Boolean> {
             br.close();
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
-                onProgressUpdate(line);
+                publish(line);
                 logger.writeLine(line,3);
             }
             br.close();
@@ -79,8 +73,7 @@ public class CheckFile extends AsyncTask<Void, String, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
+    protected void onProgress(String value) {
 
     }
 

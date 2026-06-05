@@ -3,7 +3,7 @@ package com.zalexdev.stryker.wifi.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -16,22 +16,14 @@ import java.io.OutputStream;
 /**
  * This class is used to check if the device is connected to a specific SSID
  */
-public class GetConnectedSsid extends AsyncTask<Void, String, Boolean> {
+public class GetConnectedSsid extends StrykerTask<String, Boolean> {
     public String ssid;
 
     public GetConnectedSsid(String s) {
         ssid = s;
-    }
-
-
+    }    @SuppressLint("WrongThread")
     @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
-    @SuppressLint("WrongThread")
-    @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         String line;
         boolean result = false;
 
@@ -56,7 +48,7 @@ public class GetConnectedSsid extends AsyncTask<Void, String, Boolean> {
             br.close();
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
-                onProgressUpdate(line);
+                publish(line);
 
             }
 
@@ -78,9 +70,7 @@ public class GetConnectedSsid extends AsyncTask<Void, String, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
 

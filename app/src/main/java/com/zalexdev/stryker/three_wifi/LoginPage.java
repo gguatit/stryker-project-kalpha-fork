@@ -67,7 +67,7 @@ public class LoginPage extends Fragment {
             public void onSwipeLeft() { }
             public void onSwipeBottom() { core.openmenu(menu); }
         });
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getParentFragmentManager();
         Button loginb = viewroot.findViewById(R.id.login);
         TextInputEditText log = viewroot.findViewById(R.id.getlogin);
         TextInputEditText pass = viewroot.findViewById(R.id.getpassword);

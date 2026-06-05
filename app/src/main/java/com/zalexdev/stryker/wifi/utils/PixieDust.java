@@ -5,7 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 /**
  * This class is used to run the pixie-dust attack
  */
-public class PixieDust extends AsyncTask<Void, String, WiFINetwork> {
+public class PixieDust extends StrykerTask<String, WiFINetwork> {
     @SuppressLint("StaticFieldLeak")
     public final TextView output;
     public String exec = Core.EXECUTE;
@@ -47,15 +47,9 @@ public class PixieDust extends AsyncTask<Void, String, WiFINetwork> {
         core = c;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected WiFINetwork doInBackground(Void... command) {
+    protected WiFINetwork doInBackground() {
         String line;
         WiFINetwork issuccess = new WiFINetwork();
         try {
@@ -80,7 +74,7 @@ public class PixieDust extends AsyncTask<Void, String, WiFINetwork> {
             int countaperror = 0;
             while ((line = br.readLine()) != null) {
                 out2.add(line);
-                onProgressUpdate(line);
+                publish(line);
                 if (line.contains("Associated")){
                     countaperror++;
                 }else{
@@ -93,7 +87,7 @@ public class PixieDust extends AsyncTask<Void, String, WiFINetwork> {
             br.close();
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
-                onProgressUpdate(line);
+                publish(line);
                 outerror.add(line);
             }
             core.writetolog(out2, false);
@@ -126,9 +120,8 @@ public class PixieDust extends AsyncTask<Void, String, WiFINetwork> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-        String temp = values[0];
+    protected void onProgress(String value) {
+        String temp = value;
         if (temp.contains("Trying pin")) {
             settext(white(core.str("send_pin")), output);
         } else if (temp.contains("Associated")) {
@@ -185,11 +178,11 @@ public class PixieDust extends AsyncTask<Void, String, WiFINetwork> {
     }
 
     public Spanned green(String out) {
-        return Html.fromHtml("<font color='#19D121'>" + out + "</font>");
+        return Html.fromHtml("<font color='#19D121'>" + out + "</font>", Html.FROM_HTML_MODE_LEGACY);
     }
 
     public Spanned white(String out) {
-        return Html.fromHtml("<font color='#FFFFFF'>" + out + "</font>");
+        return Html.fromHtml("<font color='#FFFFFF'>" + out + "</font>", Html.FROM_HTML_MODE_LEGACY);
     }
 
 

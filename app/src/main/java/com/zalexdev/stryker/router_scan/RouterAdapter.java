@@ -4,7 +4,6 @@ package com.zalexdev.stryker.router_scan;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,7 +76,7 @@ public class RouterAdapter extends RecyclerView.Adapter<RouterAdapter.ViewHolder
 
         new Thread(() -> {
             try {
-                Router res = new RsV2(activity,context,adapter.status,r.getIp()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                Router res = new RsV2(activity,context,adapter.status,r.getIp()).execute().get();
                 minus();
                 scanned++;
                 if (res.getSuccess()){

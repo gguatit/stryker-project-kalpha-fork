@@ -3,7 +3,7 @@ package com.zalexdev.stryker.local_network.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.utils.Core;
@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class CutNetwork extends AsyncTask<Void, Void, Void> {
+public class CutNetwork extends StrykerTask<Void, Void> {
 
 
     public Core core;
@@ -31,15 +31,9 @@ public class CutNetwork extends AsyncTask<Void, Void, Void> {
         type = ty;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Void doInBackground(Void... command) {
+    protected Void doInBackground() {
         String line;
 
 
@@ -90,13 +84,10 @@ public class CutNetwork extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected void onPostExecute(Void result) {
-        super.onPostExecute(result);
     }
 
     @Override
-    protected void onProgressUpdate(Void... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(Void value) {
     }
 
 

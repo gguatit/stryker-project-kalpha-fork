@@ -3,7 +3,7 @@ package com.zalexdev.stryker.wifi.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.utils.Core;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 /**
  * This class is used to get the list of interfaces that are available on the device
  */
-public class GetInterfaces extends AsyncTask<Void, String, ArrayList<String>> {
+public class GetInterfaces extends StrykerTask<String, ArrayList<String>> {
     public String exec = Core.EXECUTE;
     public Core core;
 
@@ -26,15 +26,9 @@ public class GetInterfaces extends AsyncTask<Void, String, ArrayList<String>> {
         core = c;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected ArrayList<String> doInBackground(Void... command) {
+    protected ArrayList<String> doInBackground() {
         String line;
         ArrayList<String> inter = new ArrayList<>();
         try {
@@ -68,7 +62,7 @@ public class GetInterfaces extends AsyncTask<Void, String, ArrayList<String>> {
                 if (!line.contains("or not found")) {
                     outerror.add(line);
                 }
-                onProgressUpdate(line);
+                publish(line);
             }
             core.writetolog(out, false);
             core.writetolog(outerror, true);
@@ -91,8 +85,7 @@ public class GetInterfaces extends AsyncTask<Void, String, ArrayList<String>> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
+    protected void onProgress(String value) {
     }
 
 

@@ -9,9 +9,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +30,8 @@ import com.zalexdev.stryker.custom.Sploit;
 import com.zalexdev.stryker.geomac.utils.GetGeoByMac;
 import com.zalexdev.stryker.searchsploit.SploitAdapter;
 import com.zalexdev.stryker.searchsploit.utils.GetSploit;
+import androidx.core.content.ContextCompat;
+
 import com.zalexdev.stryker.utils.CheckFile;
 import com.zalexdev.stryker.utils.CheckInet;
 import com.zalexdev.stryker.utils.Core;
@@ -87,14 +88,14 @@ public class GeoMac extends Fragment {
             public void onSwipeLeft() { }
             public void onSwipeBottom() { core.openmenu(menu); }
         });
-        Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
+        Configuration.getInstance().load(context, context.getSharedPreferences("stryker_prefs", Context.MODE_PRIVATE));
         map = view.findViewById(R.id.geomap);
         map.setLayerType(View.LAYER_TYPE_HARDWARE, null );
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setMultiTouchControls(true);
         fixinet();
         try {
-            if (!new CheckFile("/data/local/stryker/release/modules/GeoMac/geomac").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get()){
+            if (!new CheckFile("/data/local/stryker/release/modules/GeoMac/geomac").execute().get()){
                 getParentFragmentManager().beginTransaction().replace(R.id.flContent, new PlsInstallModule(true,"GeoMac")).commit();
             }
         } catch (ExecutionException | InterruptedException e) {
@@ -104,7 +105,7 @@ public class GeoMac extends Fragment {
         mapController.setZoom(19f);
         TextInputEditText getquery = view.findViewById(R.id.getsearch);
         search.setOnClickListener(view1 -> {
-            Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context));
+            Configuration.getInstance().load(context, context.getSharedPreferences("stryker_prefs", Context.MODE_PRIVATE));
             String q = String.valueOf(getquery.getText());
             new Thread(() -> {
 
@@ -121,7 +122,7 @@ public class GeoMac extends Fragment {
                             // This is creating a new OverlayItem object.
                             OverlayItem point = new OverlayItem(q, coords, new GeoPoint(Double.parseDouble(lat),Double.parseDouble(lon)));
                             Drawable wifipoint = context.getDrawable(R.drawable.wifi);
-                            wifipoint.setTint(getResources().getColor(R.color.blue));
+                            wifipoint.setTint(ContextCompat.getColor(context, R.color.blue));
                             point.setMarker(wifipoint);
                             items.add(point); // Lat/Lon decimal degrees
                             ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(items,
@@ -180,13 +181,13 @@ public class GeoMac extends Fragment {
         cancel.setOnClickListener(view -> dialog.dismiss());
         new Thread(() -> {
             try {
-                Boolean inet  = new CheckInet().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                Boolean inet  = new CheckInet().execute().get();
                 if (inet){
                     activity.runOnUiThread(dialog::dismiss);
                 }else{
                     activity.runOnUiThread(dialog::show);
                     boolean o = core.remountcore();
-                    inet  = new CheckInet().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                    inet  = new CheckInet().execute().get();
                     if (inet){
                         activity.runOnUiThread(dialog::dismiss);
                     }else {

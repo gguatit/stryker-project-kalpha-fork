@@ -3,7 +3,7 @@ package com.zalexdev.stryker.wifi.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.utils.Core;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 /**
  * This class is used to launch the airodump-ng command
  */
-public class LaunchAirodump extends AsyncTask<Void, String, ArrayList<String>> {
+public class LaunchAirodump extends StrykerTask<String, ArrayList<String>> {
     public String exec = Core.EXECUTE;
     public String bssid;
     public String wlan;
@@ -32,15 +32,9 @@ public class LaunchAirodump extends AsyncTask<Void, String, ArrayList<String>> {
 
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected ArrayList<String> doInBackground(Void... command) {
+    protected ArrayList<String> doInBackground() {
         String line;
         ArrayList<String> issuccess = new ArrayList<>();
 
@@ -96,9 +90,7 @@ public class LaunchAirodump extends AsyncTask<Void, String, ArrayList<String>> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
     public void kill() {

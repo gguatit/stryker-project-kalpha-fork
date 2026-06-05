@@ -6,7 +6,6 @@ import static com.zalexdev.stryker.R.string.*;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,7 +63,7 @@ public class CoreAdapter extends RecyclerView.Adapter<CoreAdapter.ViewHolder> {
             core.toaster(core.str("installingg"));
             new Thread(() -> {
                 try {
-                    Boolean ok = new InstallPackage(temp.getName(),core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                    Boolean ok = new InstallPackage(temp.getName(),core).execute().get();
                     if (ok){
                         toaster(core.str("installed")+" "+temp.getName());
                     }else{

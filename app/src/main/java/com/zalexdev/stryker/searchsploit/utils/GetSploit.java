@@ -3,7 +3,7 @@ package com.zalexdev.stryker.searchsploit.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.custom.Sploit;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 /**
  * This class is used to get the results of a search from exploit-db.com offline db
  */
-public class GetSploit extends AsyncTask<Void, String, ArrayList<Sploit>> {
+public class GetSploit extends StrykerTask<String, ArrayList<Sploit>> {
     public String exec = Core.EXECUTE;
     public String query;
     public Core core;
@@ -31,16 +31,9 @@ public class GetSploit extends AsyncTask<Void, String, ArrayList<Sploit>> {
     public GetSploit(String q, Core c) {
         core = c;
         query = q;
-    }
-
+    }    @SuppressLint("WrongThread")
     @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
-    @SuppressLint("WrongThread")
-    @Override
-    protected ArrayList<Sploit> doInBackground(Void... command) {
+    protected ArrayList<Sploit> doInBackground() {
         String line;
         StringBuilder json = new StringBuilder();
         try {
@@ -82,10 +75,7 @@ public class GetSploit extends AsyncTask<Void, String, ArrayList<Sploit>> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
-    }
+    protected void onProgress(String value) {}
 
     public ArrayList<Sploit> parse(String out) {
         ArrayList<Sploit> res = new ArrayList<>();

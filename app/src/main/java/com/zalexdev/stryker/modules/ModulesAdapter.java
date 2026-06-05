@@ -11,7 +11,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -85,7 +84,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<ModulesAdapter.ViewHold
                    new CustomCommand("mkdir /data/local/stryker/release/modules",core).execute();
                    try {
                        activity.runOnUiThread(() -> core.toaster("Installing "+m.getPksg()));
-                       boolean apk = new InstallPackage(m.getPksg(),core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                       boolean apk = new InstallPackage(m.getPksg(),core).execute().get();
                        Boolean o1 = new CustomCommand("rm -rf /data/local/stryker/release/modules/"+formated_name,core).execute().get();
                        Boolean o = new CustomCommand("mkdir /storage/emulated/0/Stryker/modules/"+formated_name,core).execute().get();
                        core.unzip(new File("/storage/emulated/0/Stryker/modules/"+formated_name+".zip"), new File("/storage/emulated/0/Stryker/modules/" + formated_name));
@@ -246,7 +245,7 @@ public class ModulesAdapter extends RecyclerView.Adapter<ModulesAdapter.ViewHold
                         setProg(prog, total[0]);
                     }else {
                         try {
-                            Boolean bool = new CustomChrootCommand(cmd, core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                            Boolean bool = new CustomChrootCommand(cmd, core).execute().get();
                         } catch (ExecutionException | InterruptedException e) {
                             e.printStackTrace();
                         }

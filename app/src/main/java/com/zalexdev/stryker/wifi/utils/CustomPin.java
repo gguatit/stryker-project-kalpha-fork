@@ -4,7 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * This class is used to run the pixiewps attack
  */
-public class CustomPin extends AsyncTask<Void, String, WiFINetwork> {
+public class CustomPin extends StrykerTask<String, WiFINetwork> {
     public String exec = Core.EXECUTE;
     public String chroot;
     public Activity mActivity;
@@ -43,15 +43,9 @@ public class CustomPin extends AsyncTask<Void, String, WiFINetwork> {
         pin = p;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected WiFINetwork doInBackground(Void... command) {
+    protected WiFINetwork doInBackground() {
         String line;
         WiFINetwork result = new WiFINetwork();
 
@@ -85,7 +79,7 @@ public class CustomPin extends AsyncTask<Void, String, WiFINetwork> {
             br.close();
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
-                onProgressUpdate(line);
+                publish(line);
                 outerror.add(line);
             }
             core.writetolog(out, false);
@@ -111,9 +105,7 @@ public class CustomPin extends AsyncTask<Void, String, WiFINetwork> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
     public WiFINetwork issuccess(ArrayList<String> out) {

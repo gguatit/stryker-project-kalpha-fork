@@ -3,7 +3,7 @@ package com.zalexdev.stryker.coremanger.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.utils.Core;
@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class InstallPipPackage extends AsyncTask<Void, String, Boolean> {
+public class InstallPipPackage extends StrykerTask<String, Boolean> {
     public String exec = Core.EXECUTE;
     public String pkgname;
     public Core core;
@@ -25,14 +25,9 @@ public class InstallPipPackage extends AsyncTask<Void, String, Boolean> {
         pkgname = p;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         String line;
         ArrayList<String> out2 = new ArrayList<>();
         boolean p = false;
@@ -70,14 +65,10 @@ public class InstallPipPackage extends AsyncTask<Void, String, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean result) {
-        super.onPostExecute(result);
-
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
 

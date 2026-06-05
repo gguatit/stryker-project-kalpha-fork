@@ -3,7 +3,7 @@ package com.zalexdev.stryker.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -16,21 +16,15 @@ import java.util.ArrayList;
 /**
  * This class checks if the device is connected to the internet from chroot
  */
-public class CheckInet extends AsyncTask<Void, String, Boolean> {
+public class CheckInet extends StrykerTask<String, Boolean> {
 
     public CheckInet() {
 
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         String line;
         boolean result = false;
 
@@ -71,8 +65,7 @@ public class CheckInet extends AsyncTask<Void, String, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
+    protected void onProgress(String value) {
 
     }
 

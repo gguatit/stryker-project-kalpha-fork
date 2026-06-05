@@ -3,7 +3,7 @@ package com.zalexdev.stryker.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class CustomChrootCommand extends AsyncTask<Void, String, Boolean> {
+public class CustomChrootCommand extends StrykerTask<String, Boolean> {
 
     public String cmd;
     public Core core;
@@ -23,15 +23,9 @@ public class CustomChrootCommand extends AsyncTask<Void, String, Boolean> {
         core = c;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         String line;
         boolean result = false;
         Logger logger = new Logger();
@@ -56,7 +50,7 @@ public class CustomChrootCommand extends AsyncTask<Void, String, Boolean> {
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
                 outerror.add(line);
-                onProgressUpdate(line);
+                publish(line);
                 logger.writeLine(line,3);
             }
             br.close();
@@ -82,8 +76,7 @@ public class CustomChrootCommand extends AsyncTask<Void, String, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
+    protected void onProgress(String value) {
 
     }
 

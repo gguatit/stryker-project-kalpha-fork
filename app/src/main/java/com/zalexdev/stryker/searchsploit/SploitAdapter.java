@@ -4,7 +4,6 @@ package com.zalexdev.stryker.searchsploit;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,7 +54,7 @@ public class SploitAdapter extends RecyclerView.Adapter<SploitAdapter.ViewHolder
         adapter.platform.setText(temp.getPlatform() + " (" + temp.getType() + ")");
         adapter.run.setOnClickListener(view -> core.toaster(temp.getPath()));
         adapter.run.setOnClickListener(view -> {
-            new CustomCommand("cp /data/local/stryker/release"+temp.getPath()+" /storage/emulated/0/Stryker/exploits/",core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new CustomCommand("cp /data/local/stryker/release"+temp.getPath()+" /storage/emulated/0/Stryker/exploits/",core).execute();
             core.toaster(core.str("saved_to_exp")+temp.getPath().split("/")[temp.getPath().split("/").length-1]);
         });
     }

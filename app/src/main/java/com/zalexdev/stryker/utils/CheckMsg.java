@@ -1,7 +1,7 @@
 package com.zalexdev.stryker.utils;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -11,25 +11,14 @@ import java.io.IOException;
 /**
  * This class is used to check for messages
  */
-public class CheckMsg extends AsyncTask<Void, String, String> {
+public class CheckMsg extends StrykerTask<String, String> {
     public CheckMsg() {
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
     }
 
     @SuppressLint("WrongThread")
     @Override
-    protected String doInBackground(Void... command) {
-        try {
-            Document doc = Jsoup.connect("https://raw.githubusercontent.com/stryker-project/updater/main/msg.txt").get();
-            return doc.text();
-        } catch (IOException e) {
-            return "Error";
-        }
+    protected String doInBackground() {
+        return "No messages";
     }
 
     @Override
@@ -38,8 +27,7 @@ public class CheckMsg extends AsyncTask<Void, String, String> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
+    protected void onProgress(String value) {
 
     }
 

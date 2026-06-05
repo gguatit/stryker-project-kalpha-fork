@@ -2,7 +2,7 @@ package com.zalexdev.stryker.three_wifi.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.custom.Cabinet;
@@ -16,7 +16,7 @@ import org.jsoup.Jsoup;
 import java.io.IOException;
 
 
-public class GetApiKeys extends AsyncTask<Void, Void, Cabinet> {
+public class GetApiKeys extends StrykerTask<Void, Cabinet> {
     public String login;
     public String pass;
     public Context context;
@@ -27,15 +27,9 @@ public class GetApiKeys extends AsyncTask<Void, Void, Cabinet> {
         context = cont;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Cabinet doInBackground(Void... command) {
+    protected Cabinet doInBackground() {
         Cabinet cabinet = new Cabinet(context);
         Log.e("3wifi", login + pass);
         try {
@@ -76,10 +70,5 @@ public class GetApiKeys extends AsyncTask<Void, Void, Cabinet> {
     }
 
     @Override
-    protected void onProgressUpdate(Void... values) {
-        super.onProgressUpdate(values);
-
-    }
-
-
+    protected void onProgress(Void value) {}
 }

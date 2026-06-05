@@ -4,7 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 import com.zalexdev.stryker.custom.Device;
 import com.zalexdev.stryker.utils.Core;
@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import jcifs.netbios.NbtAddress;
 
-public class ScanLocalDevice extends AsyncTask<Void, String, Device> {
+public class ScanLocalDevice extends StrykerTask<String, Device> {
     public String exec = Core.EXECUTE;
     public String ip;
     public Core core;
@@ -34,14 +34,9 @@ public class ScanLocalDevice extends AsyncTask<Void, String, Device> {
 
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Device doInBackground(Void... command) {
+    protected Device doInBackground() {
         String line;
         Device d = new Device();
         try {
@@ -92,14 +87,10 @@ public class ScanLocalDevice extends AsyncTask<Void, String, Device> {
 
     @Override
     protected void onPostExecute(Device result) {
-        super.onPostExecute(result);
-
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
     public Device localdevices(ArrayList<String> output) throws IOException {

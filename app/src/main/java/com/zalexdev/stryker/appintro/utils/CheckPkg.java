@@ -3,7 +3,7 @@ package com.zalexdev.stryker.appintro.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -15,7 +15,7 @@ import java.io.OutputStream;
 /**
  * CheckPkg is a class that checks if a package is installed on the device
  */
-public class CheckPkg extends AsyncTask<Void, String, Boolean> {
+public class CheckPkg extends StrykerTask<String, Boolean> {
 
 
     public String pkg;
@@ -24,15 +24,9 @@ public class CheckPkg extends AsyncTask<Void, String, Boolean> {
         pkg = p;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         String line;
         boolean result = false;
 
@@ -56,7 +50,7 @@ public class CheckPkg extends AsyncTask<Void, String, Boolean> {
             br.close();
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
-                onProgressUpdate(line);
+                publish(line);
             }
             br.close();
             process.waitFor();
@@ -72,13 +66,10 @@ public class CheckPkg extends AsyncTask<Void, String, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean result) {
-        super.onPostExecute(result);
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
 

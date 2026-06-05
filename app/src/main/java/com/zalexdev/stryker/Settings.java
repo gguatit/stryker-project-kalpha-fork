@@ -9,7 +9,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
@@ -316,7 +315,7 @@ public class Settings extends Fragment {
                                 setProg(prog, total[0]);
                             }else {
                                 try {
-                                    Boolean bool = new CustomChrootCommand(cmd, core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                                    Boolean bool = new CustomChrootCommand(cmd, core).execute().get();
                                 } catch (ExecutionException | InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -365,11 +364,11 @@ public class Settings extends Fragment {
     }
 
     public Spanned green(String out) {
-        return Html.fromHtml("<font color='#19D121'>" + out + "</font>");
+        return Html.fromHtml("<font color='#19D121'>" + out + "</font>", Html.FROM_HTML_MODE_LEGACY);
     }
 
 
     public Spanned red(String out) {
-        return Html.fromHtml("<font color='#F60B0B'>" + out + "</font>");
+        return Html.fromHtml("<font color='#F60B0B'>" + out + "</font>", Html.FROM_HTML_MODE_LEGACY);
     }
 }

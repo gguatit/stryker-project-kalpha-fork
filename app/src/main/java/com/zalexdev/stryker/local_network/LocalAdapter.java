@@ -13,7 +13,6 @@ import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -94,7 +93,7 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
             adapter.local_mac.setText("XX:XX:XX:XX:XX");
         }
         if (devices.get(position).isShim()) {
-            adapter.shim.startShimmerAnimation();
+            adapter.shim.startShimmer();
 
         }else if (!devices.get(position).isShim() && localdialog!=null&& localdialog.isShowing()&&devices.get(position).getIp().equals(dialogip)){
             localdialog.dismiss();
@@ -170,7 +169,7 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
                     .setTitle(core.str("choose_opt"))
                     .setItems(types, (dialogInterface, i) -> {
                         cut = new CutNetwork(core, d.getIp(), devices.get(0).getIp(), i);
-                        cut.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        cut.execute();
                         d.setIscutted(true);
                         notifyItemChanged(pos);
                         if (i == 2) {
@@ -222,9 +221,9 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
         LinearLayout admin = localdialog.findViewById(R.id.check_admin_panel);
         LinearLayout run_exploit = localdialog.findViewById(R.id.run_exploit);
         if (!device.isShim()){
-            shim.stopShimmerAnimation();
+            shim.stopShimmer();
         }else{
-            shim.startShimmerAnimation();
+            shim.startShimmer();
         }
         if (core.is64Bit() && core.checkmod("Router Scan")){
         admin.setOnClickListener(view -> getPort("Admin", port, ip));}
@@ -333,7 +332,7 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
                                 res.append(" ");
                                 new Thread(() -> {
                                     boolean result = false;
-                                    try {result = new BasicExploitLaunch(exploit.getSuccesspatern(), finalCmd1,core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get(); } catch (ExecutionException | InterruptedException executionException) {executionException.printStackTrace();}
+                                    try {result = new BasicExploitLaunch(exploit.getSuccesspatern(), finalCmd1,core).execute().get(); } catch (ExecutionException | InterruptedException executionException) {executionException.printStackTrace();}
                                     if (result){
                                         res.append(exploit.getTitle()).append(";");
                                         success[0]++;}
@@ -406,7 +405,7 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
         for (Exploit e : exploits){
             new Thread(() -> {
                 boolean result = false;
-                try {result = new BasicExploitLaunch(e.getSuccesspatern(),e.genereteLaunchCommand(),core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get(); } catch (ExecutionException | InterruptedException executionException) {executionException.printStackTrace();}
+                try {result = new BasicExploitLaunch(e.getSuccesspatern(),e.genereteLaunchCommand(),core).execute().get(); } catch (ExecutionException | InterruptedException executionException) {executionException.printStackTrace();}
                 if (result){res.append(e.getTitle()+";");
                     success[0]++;}
                 wait[0]++;
@@ -457,7 +456,7 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
 
                 try {
                     Router router;
-                    router = new RouterScan(activity, context, progress, prog, ip, port).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                    router = new RouterScan(activity, context, progress, prog, ip, port).execute().get();
                     setProg(prog, 100);
                     setText(cancel, "OK");
                     if (!router.getSuccess()) {

@@ -5,7 +5,7 @@ import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
@@ -20,7 +20,7 @@ import java.io.OutputStream;
 /**
  * This class checks for updates and returns the result
  */
-public class CheckUpdates extends AsyncTask<Void, String, String> {
+public class CheckUpdates extends StrykerTask<String, String> {
 
     public Context context;
     public Core core;
@@ -28,23 +28,10 @@ public class CheckUpdates extends AsyncTask<Void, String, String> {
         context = cont;
         core = new Core(context);
     }
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected String doInBackground(Void... command) {
-        try {
-            Document doc = Jsoup.connect("https://raw.githubusercontent.com/stryker-project/updater/main/update.txt").get();
-            return doc.text();
-        } catch (IOException e) {
-            return "Error";
-        }
-
-
+    protected String doInBackground() {
+        return "No updates";
     }
 
     @Override
@@ -53,8 +40,7 @@ public class CheckUpdates extends AsyncTask<Void, String, String> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
+    protected void onProgress(String value) {
 
     }
 

@@ -4,7 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 /**
  * This class is used to run the install and delete scripts for the modules
  */
-public class RunModule extends AsyncTask<Void, String, Boolean> {
+public class RunModule extends StrykerTask<String, Boolean> {
 
     public String formatted_name;
     public Core core;
@@ -39,15 +39,9 @@ public class RunModule extends AsyncTask<Void, String, Boolean> {
         name = n;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
 
         boolean result = false;
 
@@ -132,10 +126,8 @@ public class RunModule extends AsyncTask<Void, String, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
+    protected void onProgress(String value) {}
 
-    }
     public void appendText(String text, boolean iserror){
         if (!iserror){
             log.append(white(text));
@@ -145,11 +137,11 @@ public class RunModule extends AsyncTask<Void, String, Boolean> {
         log.append("\n");
     }
     public Spanned white(String out) {
-        return Html.fromHtml("<font color='#FFFFFF'>" + out + "</font>");
+        return Html.fromHtml("<font color='#FFFFFF'>" + out + "</font>", Html.FROM_HTML_MODE_LEGACY);
     }
 
     public Spanned red(String out) {
-        return Html.fromHtml("<font color='#F60B0B'>" + out + "</font>");
+        return Html.fromHtml("<font color='#F60B0B'>" + out + "</font>", Html.FROM_HTML_MODE_LEGACY);
     }
 
 }

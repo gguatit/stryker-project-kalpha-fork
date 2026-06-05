@@ -3,7 +3,7 @@ package com.zalexdev.stryker.coremanger.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.custom.Package;
@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 /**
  * This class is used to get a list of packages that match a certain query
  */
-public class GetPackage extends AsyncTask<Void, String, ArrayList<Package>> {
+public class GetPackage extends StrykerTask<String, ArrayList<Package>> {
     public String exec = Core.EXECUTE;
     public String query;
     public Core core;
@@ -36,14 +36,9 @@ public class GetPackage extends AsyncTask<Void, String, ArrayList<Package>> {
         query = q;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected ArrayList<Package> doInBackground(Void... command) {
+    protected ArrayList<Package> doInBackground() {
         String line;
         ArrayList<String> out2 = new ArrayList<>();
         try {
@@ -79,14 +74,10 @@ public class GetPackage extends AsyncTask<Void, String, ArrayList<Package>> {
 
     @Override
     protected void onPostExecute(ArrayList<Package> result) {
-        super.onPostExecute(result);
-
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
     public ArrayList<Package> parse(ArrayList<String> out) {

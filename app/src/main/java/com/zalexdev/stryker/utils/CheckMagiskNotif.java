@@ -3,7 +3,7 @@ package com.zalexdev.stryker.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * It checks to see if the
  * notification policy is set to 1. If it is, it returns true. If it isn't, it returns false
  */
-public class CheckMagiskNotif extends AsyncTask<Void, String, Boolean> {
+public class CheckMagiskNotif extends StrykerTask<String, Boolean> {
 
     // This is the command that is being run on the device.
     public String cmd = "/data/data/com.zalexdev.stryker/files/sqlite3 /data/adb/magisk.db \"SELECT notification FROM policies WHERE package_name='com.zalexdev.stryker';\"";
@@ -25,12 +25,10 @@ public class CheckMagiskNotif extends AsyncTask<Void, String, Boolean> {
 
     public CheckMagiskNotif(Core c) {core = c;}
 
-    @Override
-    protected void onPreExecute() {super.onPreExecute();}
 
     @SuppressLint("WrongThread")
     @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         String line;
         boolean result = false;
         try {
@@ -54,7 +52,7 @@ public class CheckMagiskNotif extends AsyncTask<Void, String, Boolean> {
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
                 outerror.add(line);
-                onProgressUpdate(line);
+                publish(line);
             }
             br.close();
             core.writetolog(out, false);
@@ -76,7 +74,7 @@ public class CheckMagiskNotif extends AsyncTask<Void, String, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {super.onProgressUpdate(values);}
+    protected void onProgress(String value) {}
 
 
 }

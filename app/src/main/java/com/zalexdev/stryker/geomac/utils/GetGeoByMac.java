@@ -3,7 +3,7 @@ package com.zalexdev.stryker.geomac.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.utils.Core;
@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 /**
  * This class is used to get the coordinates of a device by its MAC address
  */
-public class GetGeoByMac extends AsyncTask<Void, String, String> {
+public class GetGeoByMac extends StrykerTask<String, String> {
     public String mac;
     public Core core;
 
@@ -30,14 +30,9 @@ public class GetGeoByMac extends AsyncTask<Void, String, String> {
     }
 
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected String doInBackground(Void... command) {
+    protected String doInBackground() {
         String line;
         String result = "";
 
@@ -68,7 +63,7 @@ public class GetGeoByMac extends AsyncTask<Void, String, String> {
             br.close();
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
-                onProgressUpdate(line);
+                publish(line);
 
             }
 
@@ -86,13 +81,10 @@ public class GetGeoByMac extends AsyncTask<Void, String, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        super.onPostExecute(result);
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
 

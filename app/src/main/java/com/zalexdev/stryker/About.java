@@ -44,6 +44,7 @@ public class About extends Fragment {
         MaterialCardView pda = viewroot.findViewById(R.id.about_4pda);
         MaterialCardView web = viewroot.findViewById(R.id.about_site);
         MaterialCardView donate = viewroot.findViewById(R.id.about_donate);
+        hideCard(web); hideCard(donate); hideCard(tg); hideCard(pda);
         ExpandableLayout menu = activity.findViewById(R.id.menu_expand);
         viewroot.setOnTouchListener(new OnSwipeListener(context) {
             public void onSwipeTop() {core.closemenu(menu); }
@@ -52,12 +53,8 @@ public class About extends Fragment {
             public void onSwipeLeft() { }
             public void onSwipeBottom() { core.openmenu(menu); }
         });
-        web.setOnClickListener(view -> openlink("https://zalex.dev/stryker"));
-        donate.setOnClickListener(view -> openlink("https://zalex.dev/stryker/donate"));
-        tg.setOnClickListener(view -> openlink("https://t.me/strykerapp"));
-        pda.setOnClickListener(view -> openlink("https://4pda.to/forum/index.php?showtopic=1037129"));
 
-        info.setText(getDeviceName() + "\n" + core.str("plata") + Build.BOARD + "\n" + "Android SDK: " + Build.VERSION.SDK);
+        info.setText(getDeviceName() + "\n" + core.str("plata") + Build.BOARD + "\n" + "Android SDK: " + Build.VERSION.SDK_INT);
         return viewroot;
     }
 
@@ -94,5 +91,9 @@ public class About extends Fragment {
         ClipData clip = ClipData.newPlainText(core.str("copied"), text);
         clipboard.setPrimaryClip(clip);
         core.toaster(core.str("copied"));
+    }
+
+    private void hideCard(MaterialCardView card) {
+        if (card != null) card.setVisibility(View.GONE);
     }
 }

@@ -5,10 +5,10 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.os.Environment;
 
-public class DownloadFile extends AsyncTask<Void, String, Boolean> {
+public class DownloadFile extends StrykerTask<String, Boolean> {
 
 
     public Context context;
@@ -23,15 +23,9 @@ public class DownloadFile extends AsyncTask<Void, String, Boolean> {
         manager = m;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint({"WrongThread", "Range"})
     @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         Logger logger = new Logger();
         logger.writeLine("Downloading file.."+urlDownload,1);
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(urlDownload));
@@ -60,8 +54,7 @@ public class DownloadFile extends AsyncTask<Void, String, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
+    protected void onProgress(String value) {
 
     }
 

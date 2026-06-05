@@ -3,7 +3,6 @@ package com.zalexdev.stryker.appintro;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +45,7 @@ public class SlideFinnal extends Fragment {
         TextView desc = view.findViewById(R.id.slide_description);
         MaterialButton button = view.findViewById(R.id.slide_button);
         button.setOnClickListener(view1 -> {
-            new CustomCommand("sleep 1&&am start -n com.zalexdev.stryker/.MainActivity",new Core(context)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new CustomCommand("sleep 1&&am start -n com.zalexdev.stryker/.MainActivity",new Core(context)).execute();
             activity.finishAffinity();
         });
         return view;

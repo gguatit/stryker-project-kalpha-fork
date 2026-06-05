@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -117,7 +116,7 @@ public class Wifi extends Fragment {
                 if (wlans.contains(wlan)) {
                     inter = true;
                     if (!wlan.equals("wlan0") && wlan.contains("mon")){
-                        boolean ok = new DisableMonitor(wlan,core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                        boolean ok = new DisableMonitor(wlan,core).execute().get();
                         wlan = wlan.replace("mon","");
                         new EnableInterface(wlan, core).execute().get();
                         }else if (!wlan.equals("wlan0")){
@@ -183,7 +182,7 @@ public class Wifi extends Fragment {
                                         int finalI = i;
                                         new Thread(() -> {
                                             try {
-                                                ArrayList<WiFINetwork> three = new GetWiFI(cabinet.getKeyView(), temp.getMac()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                                                ArrayList<WiFINetwork> three = new GetWiFI(cabinet.getKeyView(), temp.getMac()).execute().get();
                                                 if (!three.isEmpty()) {
                                                     temp.setPsk(three.get(0).getPsk());
                                                     temp.setPin(three.get(0).getPin());

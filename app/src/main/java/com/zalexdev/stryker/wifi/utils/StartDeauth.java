@@ -3,7 +3,7 @@ package com.zalexdev.stryker.wifi.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.utils.Core;
@@ -17,7 +17,7 @@ import java.io.OutputStream;
 /**
  * This class is used to start the deauth attack
  */
-public class StartDeauth extends AsyncTask<Void, String, Boolean> {
+public class StartDeauth extends StrykerTask<String, Boolean> {
     public String exec = Core.EXECUTE;
     public boolean limit;
     public String bssid;
@@ -32,15 +32,9 @@ public class StartDeauth extends AsyncTask<Void, String, Boolean> {
 
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         String line;
         boolean result = false;
 
@@ -68,7 +62,7 @@ public class StartDeauth extends AsyncTask<Void, String, Boolean> {
             br.close();
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
-                onProgressUpdate(line);
+                onProgress(line);
             }
             br.close();
             process.waitFor();
@@ -88,10 +82,7 @@ public class StartDeauth extends AsyncTask<Void, String, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
-    }
+    protected void onProgress(String value) {}
 
     public void kill() {
         process.destroy();

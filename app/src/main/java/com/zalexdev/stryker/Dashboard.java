@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -94,7 +93,7 @@ public class Dashboard extends Fragment  {
         try {
             // This code is checking if Magisk notifications about root access is active. If it is, it will
             // show the notification.
-            if (new CheckMagiskNotif(core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get()){
+            if (new CheckMagiskNotif(core).execute().get()){
                 magisk_notif.expand();
             }
         } catch (ExecutionException | InterruptedException e) {
@@ -114,11 +113,11 @@ public class Dashboard extends Fragment  {
                         + "/data/adb/magisk.db"
                         + " \"UPDATE policies SET logging='0',notification='0' WHERE package_name='"
                         + "com.zalexdev.stryker"
-                        + "';\"",core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                        + "';\"",core).execute().get();
                 if (disablemagisknotif){
-                    core.toaster("Уведомления отключены!");
+                    core.toaster("Уведомлени? о?кл??ен?!");
                 }else {
-                    core.toaster("Ошибка отключения уведомления!");
+                    core.toaster("??ибка о?кл??ени? ?ведомлени?!");
                 }
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
@@ -129,7 +128,7 @@ public class Dashboard extends Fragment  {
             core.putString("username", "New User");
             core.remove("installed_modules");
             try {
-                ArrayList<String> interfaces = new GetInterfaces(core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                ArrayList<String> interfaces = new GetInterfaces(core).execute().get();
                 if (interfaces.contains("swlan0")){
                     core.putString("wlan_scan", "swlan0");
                     core.putString("wlan_deauth", "swlan0");
@@ -145,60 +144,14 @@ public class Dashboard extends Fragment  {
             }
             core.putBoolean("first_open", true);
             core.putBoolean("store_scan", true);
-            core.putBoolean("auto_update", true);
+            core.putBoolean("auto_update", false);
             core.putInt("night",2);
             core.putInt("threads", 100);
-            new CustomCommand("dumpsys deviceidle whitelist +com.zalexdev.stryker", core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new CustomCommand("dumpsys deviceidle whitelist +com.zalexdev.stryker", core).execute();
         }
 
 
-        if (core.getBoolean("auto_update")){
-        // This code is checking for updates.
-        new Thread(() -> {
-            JSONObject update = core.getjsonbyurl("https://raw.githubusercontent.com/stryker-project/updater/main/update");
-            try {
-            int version = 23;
-            int newversion = update.getInt("version");
-            if (newversion>version){
-                activity.runOnUiThread(() -> {
-                    try {
-                        if (!update.getBoolean("isfix")){
-                        updatedialog(update.getString("name"),update.getString("srcapk"),update.getString("chroot32"),update.getString("chroot64"));}
-                        else{
-                            updatefix(update.getString("srcapk"));
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                });
-            }
-                } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }).start();
-        // This code is checking for a new update message from the server.
-        new Thread(() -> {
-            JSONObject msg = core.getjsonbyurl("https://raw.githubusercontent.com/stryker-project/updater/main/msg");
-            try {
-                if (msg.has("msg") && !core.getListString("msgs").contains(msg.getString("title"))){
-                    ArrayList<String> msgs = core.getListString("msgs");
-                    msgs.add(msg.getString("title"));
-                    core.putListString("msgs",msgs);
-                    activity.runOnUiThread(() -> {
-                        try {
-                            newmsg(msg.getString("title"),msg.getString("msg"),msg.getBoolean("enabled"),msg.getString("buttontext"), msg.getString("url"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
 
-                    });
-                     }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-            }
 
 
 
@@ -228,7 +181,7 @@ public class Dashboard extends Fragment  {
                 .setTitle(R.string.new_update)
                 .setMessage(getString(R.string.want_update) + "23" + getString(R.string.doo) + name + getString(R.string.rvregre))
                 .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
-                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentManager fragmentManager = getParentFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.flContent, new Updater(urlapk,urlchroot32,urlchroot64)).commit();
                 })
                 .setNegativeButton(R.string.no, (dialogInterface, i) -> dialogInterface.dismiss()).show();
@@ -248,7 +201,7 @@ public class Dashboard extends Fragment  {
                 .setTitle(R.string.new_fix)
                 .setMessage(R.string.recom)
                 .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
-                    FragmentManager fragmentManager = getFragmentManager();
+                    FragmentManager fragmentManager = getParentFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.flContent, new Fixer(urlapk)).commit();
                 })
                 .setNegativeButton(R.string.no, (dialogInterface, i) -> {

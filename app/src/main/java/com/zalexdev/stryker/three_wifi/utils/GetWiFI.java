@@ -1,7 +1,7 @@
 package com.zalexdev.stryker.three_wifi.utils;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.custom.WiFINetwork;
@@ -19,7 +19,7 @@ import java.util.Locale;
 /**
  * This class is used to get the data from db with WiFi networks around the user
  */
-public class GetWiFI extends AsyncTask<Void, Void, ArrayList<WiFINetwork>> {
+public class GetWiFI extends StrykerTask<Void, ArrayList<WiFINetwork>> {
     public String key;
     public String bssid;
 
@@ -30,15 +30,9 @@ public class GetWiFI extends AsyncTask<Void, Void, ArrayList<WiFINetwork>> {
 
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected ArrayList<WiFINetwork> doInBackground(Void... command) {
+    protected ArrayList<WiFINetwork> doInBackground() {
         ArrayList<WiFINetwork> results = new ArrayList<>();
         Log.e("3wifi", key + bssid);
         try {
@@ -85,10 +79,5 @@ public class GetWiFI extends AsyncTask<Void, Void, ArrayList<WiFINetwork>> {
     }
 
     @Override
-    protected void onProgressUpdate(Void... values) {
-        super.onProgressUpdate(values);
-
-    }
-
-
+    protected void onProgress(Void value) {}
 }

@@ -3,7 +3,7 @@ package com.zalexdev.stryker.wifi.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.utils.Core;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 /**
  * This class is used to enable monitor mode on a given interface
  */
-public class EnableMonitor extends AsyncTask<Void, String, Boolean> {
+public class EnableMonitor extends StrykerTask<String, Boolean> {
     public String exec = Core.EXECUTE;
     public String wlan;
     public String channel;
@@ -30,15 +30,9 @@ public class EnableMonitor extends AsyncTask<Void, String, Boolean> {
         wlan = wlan1;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         String line;
         boolean result = false;
         try {
@@ -72,7 +66,7 @@ public class EnableMonitor extends AsyncTask<Void, String, Boolean> {
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
                 outerror.add(line);
-                onProgressUpdate(line);
+                publish(line);
             }
             core.writetolog(out, false);
             core.writetolog(outerror, true);
@@ -94,9 +88,7 @@ public class EnableMonitor extends AsyncTask<Void, String, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
 

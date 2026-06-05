@@ -3,7 +3,7 @@ package com.zalexdev.stryker.wifi.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.utils.Core;
@@ -18,22 +18,14 @@ import java.io.OutputStream;
 /**
  * This class is used to check if the handshake in file exists
  */
-public class CheckHandshake extends AsyncTask<Void, String, Boolean> {
+public class CheckHandshake extends StrykerTask<String, Boolean> {
     public String exec = Core.EXECUTE;
     public String chroot;
 
     public CheckHandshake() {
-    }
-
-
+    }    @SuppressLint("WrongThread")
     @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
-    @SuppressLint("WrongThread")
-    @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         String line;
         boolean result = false;
 
@@ -59,7 +51,7 @@ public class CheckHandshake extends AsyncTask<Void, String, Boolean> {
             br.close();
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
-                onProgressUpdate(line);
+                publish(line);
 
             }
 
@@ -81,9 +73,7 @@ public class CheckHandshake extends AsyncTask<Void, String, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
 

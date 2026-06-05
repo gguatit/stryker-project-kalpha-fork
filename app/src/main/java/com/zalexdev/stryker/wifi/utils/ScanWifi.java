@@ -3,7 +3,7 @@ package com.zalexdev.stryker.wifi.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import com.zalexdev.stryker.custom.WiFINetwork;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 /**
  * This class is used to scan for wifi networks and parse the output of the scan
  */
-public class ScanWifi extends AsyncTask<Void, String, ArrayList<WiFINetwork>> {
+public class ScanWifi extends StrykerTask<String, ArrayList<WiFINetwork>> {
     public String exec = Core.EXECUTE;
     public String wlan;
     public int count = 0;
@@ -31,18 +31,9 @@ public class ScanWifi extends AsyncTask<Void, String, ArrayList<WiFINetwork>> {
     public ScanWifi(String whatwlan, Core c) {
         core = c;
         wlan = whatwlan;
-    }
-
+    }    @SuppressLint("WrongThread")
     @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        count = 0;
-        count2 = 0;
-    }
-
-    @SuppressLint("WrongThread")
-    @Override
-    protected ArrayList<WiFINetwork> doInBackground(Void... command) {
+    protected ArrayList<WiFINetwork> doInBackground() {
         String line;
         ArrayList<WiFINetwork> result = new ArrayList<>();
         try {
@@ -86,10 +77,7 @@ public class ScanWifi extends AsyncTask<Void, String, ArrayList<WiFINetwork>> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
-    }
+    protected void onProgress(String value) {}
 
     public ArrayList<WiFINetwork> parsewifi(ArrayList<String> output) {
         WiFINetwork wifi = new WiFINetwork();

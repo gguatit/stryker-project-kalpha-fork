@@ -1,8 +1,8 @@
 package com.zalexdev.stryker.modules;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -39,7 +39,7 @@ public class InstalModuleActivity extends AppCompatActivity {
         relaunch.hide();
         new Thread(() -> {
             try {
-                boolean module = new RunModule(path,new Core(context),log,activity,getIntent().getExtras().getBoolean("install"),name).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                boolean module = new RunModule(path,new Core(context),log,activity,getIntent().getExtras().getBoolean("install"),name).execute().get();
                 runOnUiThread(relaunch::show);
                 runOnUiThread(relaunch::extend);
             } catch (ExecutionException | InterruptedException e) {
@@ -47,15 +47,16 @@ public class InstalModuleActivity extends AppCompatActivity {
             }
         }).start();
         relaunch.setOnClickListener(view -> {
-            new CustomCommand("am start -n com.zalexdev.stryker/.MainActivity",new Core(context)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            new CustomCommand("am start -n com.zalexdev.stryker/.MainActivity",new Core(context)).execute();
             finishAffinity();
         });
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                new Core(context).toaster("Relaunch app!");
+            }
+        });
 
-
-    }
-    @Override
-    public void onBackPressed() {
-        new Core(context).toaster("Relaunch app!");
     }
 }

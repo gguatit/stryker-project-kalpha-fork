@@ -5,7 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 /**
  * This class is used to run the router scan binary from the command line
  */
-public class RsV2 extends AsyncTask<Void, String, Router> {
+public class RsV2 extends StrykerTask<String, Router> {
     public String exec = Core.EXECUTE;
     public String chroot;
     public Context mContext;
@@ -51,15 +51,9 @@ public class RsV2 extends AsyncTask<Void, String, Router> {
 
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Router doInBackground(Void... command) {
+    protected Router doInBackground() {
         String line;
         Router r = new Router();
 
@@ -78,13 +72,13 @@ public class RsV2 extends AsyncTask<Void, String, Router> {
             BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
             while ((line = br.readLine()) != null) {
                 out2.add(line);
-                onProgressUpdate(line);
+                onProgress(line);
             }
             br.close();
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
                 outerror.add(line);
-                onProgressUpdate(line);
+                onProgress(line);
             }
             core.writetolog(out2, false);
             core.writetolog(outerror, true);
@@ -112,17 +106,16 @@ public class RsV2 extends AsyncTask<Void, String, Router> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-        if (values[0].contains("log in")) {
-            Matcher m = Pattern.compile("[0-9]+").matcher(values[0]);
+    protected void onProgress(String value) {
+        if (value.contains("log in")) {
+            Matcher m = Pattern.compile("[0-9]+").matcher(value);
             String percent = "";
             if (m.find()) {
                 percent = m.group();
                 setText(textprg, "Bruting... (" + percent + "%)");
             }
-        } else if (values[0].contains("Status")) {
-            setText(textprg, values[0].replace("Status: ",""));
+        } else if (value.contains("Status")) {
+            setText(textprg, value.replace("Status: ",""));
         }
     }
 

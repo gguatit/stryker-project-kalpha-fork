@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -100,7 +99,7 @@ public class RouterScanMain extends Fragment implements ThreadInterface{
             public void onSwipeBottom() { core.openmenu(menu); }
         });
         try {
-            if (!new CheckFile("/data/local/stryker/release/usr/bin/rs").executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get()){
+            if (!new CheckFile("/data/local/stryker/release/usr/bin/rs").execute().get()){
               getParentFragmentManager().beginTransaction().replace(R.id.flContent, new PlsInstallModule(true,"Router Scan")).commit();
             }
         } catch (ExecutionException | InterruptedException e) {
@@ -483,14 +482,14 @@ public boolean scan(String ip, String port){
         cancel.setOnClickListener(view -> dialog.dismiss());
         new Thread(() -> {
             try {
-                Boolean inet  = new CheckInet().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                Boolean inet  = new CheckInet().execute().get();
                 if (inet){
                     activity.runOnUiThread(dialog::dismiss);
                 }else{
                     activity.runOnUiThread(dialog::show);
 
                     boolean o = core.remountcore();
-                    inet  = new CheckInet().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                    inet  = new CheckInet().execute().get();
                     if (inet){
                         activity.runOnUiThread(dialog::dismiss);
                     }else {

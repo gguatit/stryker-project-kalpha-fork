@@ -3,7 +3,7 @@ package com.zalexdev.stryker.utils;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 /**
  * This class is used to fix the inet group permissions
  */
-public class FixInet extends AsyncTask<Void, String, Boolean> {
+public class FixInet extends StrykerTask<String, Boolean> {
 
 
     public Core core;
@@ -25,15 +25,9 @@ public class FixInet extends AsyncTask<Void, String, Boolean> {
         core = c;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Boolean doInBackground(Void... command) {
+    protected Boolean doInBackground() {
         String line;
         boolean result = false;
 
@@ -62,7 +56,7 @@ public class FixInet extends AsyncTask<Void, String, Boolean> {
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
                 outerror.add(line);
-                onProgressUpdate(line);
+                publish(line);
             }
             br.close();
             core.writetolog(out, false);
@@ -87,8 +81,7 @@ public class FixInet extends AsyncTask<Void, String, Boolean> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
+    protected void onProgress(String value) {
 
     }
 

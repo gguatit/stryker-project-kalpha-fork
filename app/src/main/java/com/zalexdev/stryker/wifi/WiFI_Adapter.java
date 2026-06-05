@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -96,9 +95,9 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
             adapter.wifi_name.setText(wifilist.get(position).getSsid());
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                adapter.wifi_name.setText(Html.fromHtml(wifilist.get(position).getSsid() + " <b>⑤</b>", Html.FROM_HTML_MODE_COMPACT));
+                adapter.wifi_name.setText(Html.fromHtml(wifilist.get(position).getSsid() + " <b>??/b>", Html.FROM_HTML_MODE_COMPACT));
             } else {
-                adapter.wifi_name.setText(Html.fromHtml(wifilist.get(position).getSsid() + " <b>⑤</b>"));
+                adapter.wifi_name.setText(Html.fromHtml(wifilist.get(position).getSsid() + " <b>??/b>", Html.FROM_HTML_MODE_LEGACY));
             }
         }
 
@@ -188,7 +187,7 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
                             try {
                                 ArrayList<String> temp = new ArrayList<>();
                                 brute[0] = new BrutePsk(activity,output,name,core,path);
-                                WiFINetwork w = brute[0].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                                WiFINetwork w = brute[0].execute().get();
                                 if (w.getOK()){
                                     activity.runOnUiThread(() -> {
                                         core.scale(wifiimg,1.0F);
@@ -241,7 +240,7 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
                 new Thread(() -> {
                     settext(core.str("try_connect"), output);
                     try {
-                        WiFINetwork w = new CustomPin(value,activity,output,mac,wlan_listen,core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                        WiFINetwork w = new CustomPin(value,activity,output,mac,wlan_listen,core).execute().get();
                         if (w.getOK()){
                             activity.runOnUiThread(() -> {
                                 core.scale(wifiimg,1.0F);
@@ -320,7 +319,7 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
                 Thread t = new Thread(() -> {
                     try {
 
-                        WiFINetwork result = brute_wps[0].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                        WiFINetwork result = brute_wps[0].execute().get();
 
                         if (!result.isCanceled()) {
                             if (result.getOK()) {
@@ -395,7 +394,7 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
                 Thread t = new Thread(() -> {
                     pixie[0] = new PixieDust(context, activity, output, mac, name, new Core(context));
                     try {
-                        WiFINetwork result = pixie[0].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                        WiFINetwork result = pixie[0].execute().get();
                         if (!result.isCanceled()) {
                             if (result.getOK()) {
                                 activity.runOnUiThread(() -> {
@@ -483,11 +482,11 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
                     final Boolean[] success = {false};
                     if (wlan_listen.equals(wlan_deauth[0]) && wlan_deauth[0].equals("wlan0")) {
                         settext(core.str("try_wlan0"), output);
-                        Boolean listen = new EnableMonitor(wlan_listen, channel, new Core(context)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                        Boolean listen = new EnableMonitor(wlan_listen, channel, new Core(context)).execute().get();
                         if (listen) {
                             settext(core.str("start_dump") + "\n", output);
                             LaunchAirodump airodump = new LaunchAirodump(mac, wlan_listen, new Core(context));
-                            airodump.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                            airodump.execute();
                             bottomSheetDialog.setOnDismissListener(dialogInterface -> airodump.kill());
                             Timer cowpatty = new Timer();
                             final int[] time = {0};
@@ -498,11 +497,11 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
                                     time[0] += 5;
                                     CheckFile checkFile = new CheckFile("/storage/emulated/0/Stryker/hs/handshake-01.cap");
                                     try {
-                                        if (checkFile.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get()) {
+                                        if (checkFile.execute().get()) {
                                             if (!success[0]) {
                                                 try {
 
-                                                    success[0] = new CheckHandshake().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                                                    success[0] = new CheckHandshake().execute().get();
 
                                                 } catch (ExecutionException | InterruptedException e) {
                                                     e.printStackTrace();
@@ -520,7 +519,7 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
                                                 if (deauth!=null){deauth.cancel();}
                                                 MoveFile moveFile = new MoveFile("/storage/emulated/0/Stryker/hs/handshake-01.cap", "/storage/emulated/0/Stryker/hs/" + name + "(" + mac + ").cap");
                                                 try {
-                                                    Boolean moved = moveFile.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                                                    Boolean moved = moveFile.execute().get();
                                                     if (moved) {
                                                         settext(core.str("saved_to_hs") + "/storage/emulated/0/Stryker/hs/" + name + " (" + mac + ").cap\n", output);
 
@@ -534,7 +533,7 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
                                                 airodump.kill();
                                  
                                                 if (cowpatty!=null){cowpatty.cancel();}
-                                                new DisableMonitor(wlan_listen, new Core(context)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                                new DisableMonitor(wlan_listen, new Core(context)).execute();
                                             }
                                         } else {
                                             settext(core.str("cant_airodump"), output);
@@ -548,22 +547,22 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
 
 
                     } else {
-                        if (new GetInterfaces(new Core(context)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get().contains(wlan_deauth[0])) {
+                        if (new GetInterfaces(new Core(context)).execute().get().contains(wlan_deauth[0])) {
                             settext(core.str("trying_put_inter"), output);
                             EnableMonitor monitor = new EnableMonitor(wlan_listen, channel, new Core(context));
-                            Boolean listen = monitor.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                            Boolean listen = monitor.execute().get();
                             Boolean listen2;
                             if (listen && wlan_deauth[0].equals(wlan_listen)) {
                                 listen2 = true;
                             } else {
                                 EnableMonitor monitor2 = new EnableMonitor(wlan_deauth[0], channel, new Core(context));
-                                listen2 = monitor2.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                                listen2 = monitor2.execute().get();
                             }
                             if (listen && listen2) {
                                 settext(core.str("start_airdump") + "\n", output);
                                 LaunchAirodump airodump = new LaunchAirodump(mac, wlan_listen, new Core(context));
 
-                                airodump.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                airodump.execute();
 
                                 Timer cowpatty = new Timer();
                                 cowpatty.scheduleAtFixedRate(new TimerTask() {
@@ -572,7 +571,7 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
                                         CheckFile checkFile = new CheckFile("/storage/emulated/0/Stryker/hs/handshake-01.cap");
                                         try {
 
-                                            if (checkFile.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get()) {
+                                            if (checkFile.execute().get()) {
                                                 if (!success[0]) {
                                                     try {
                                                         CheckHandshake check_hs = new CheckHandshake();
@@ -597,7 +596,7 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
                                                     });
                                                     MoveFile moveFile = new MoveFile("/storage/emulated/0/Stryker/hs/handshake-01.cap", "/storage/emulated/0/Stryker/captured/" + name.replaceAll("\\s+", "") + "_" + mac + ".cap");
                                                     try {
-                                                        Boolean moved = moveFile.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                                                        Boolean moved = moveFile.execute().get();
                                                         if (moved) {
                                                             settext(core.str("saved_to_hs") + "/storage/emulated/0/Stryker/captured/" + name + "_" + mac + ".cap\n", output);
 
@@ -611,10 +610,10 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
                                                     if (cowpatty!=null){cowpatty.cancel();}
 
                                                         DisableMonitor disableMonitor = new DisableMonitor(wlan_listen, new Core(context));
-                                                        disableMonitor.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                                        disableMonitor.execute();
                                                     if (!wlan_deauth[0].equals(wlan_listen)){
                                                         DisableMonitor disableMonitor2 = new DisableMonitor(wlan_deauth[0], new Core(context));
-                                                        disableMonitor2.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                                        disableMonitor2.execute();
                                                     }
                                                 }
                                             } else {
@@ -634,7 +633,7 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
                                     public void run() {
                                         StartDeauth startDeauth = new StartDeauth(mac, wlan_deauth[0], true, new Core(context));
                                         try {
-                                            Boolean isok = startDeauth.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                                            Boolean isok = startDeauth.execute().get();
                                             if (isok) {
                                                 settext(core.str("deauthing"), output);
                                             } else {
@@ -683,22 +682,22 @@ public class WiFI_Adapter extends RecyclerView.Adapter<WiFI_Adapter.ViewHolder> 
 
             try {
                 if (!wlan_deauth[0].equals("wlan0")) {
-                    ArrayList<String> wlans = getInterfaces.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                    ArrayList<String> wlans = getInterfaces.execute().get();
                     if (wlans.contains(wlan_deauth[0] +"mon")){
                         wlan_deauth[0] = wlan_deauth[0] +"mon";}
                     if (wlans.contains(wlan_deauth[0])) {
                         EnableMonitor enableMonitor = new EnableMonitor(wlan_deauth[0], channel, new Core(context));
-                        if (enableMonitor.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get()) {
+                        if (enableMonitor.execute().get()) {
                             StartDeauth startDeauth = new StartDeauth(mac, wlan_deauth[0], false, new Core(context));
                             main_cancel.setOnClickListener(view14 -> {
                                 exp_attack.collapse();
                                 exp_main.expand();
                                 startDeauth.kill();
-                                new DisableMonitor(wlan_deauth[0], core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                new DisableMonitor(wlan_deauth[0], core).execute();
                             });
                             main_cancel.setEnabled(true);
                             settext(core.str("deauthing"), output);
-                            startDeauth.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                            startDeauth.execute();
                         } else {
                             core.scale(wifiimg,1.0F);
                             core.scale(attack_progress,0.0F);

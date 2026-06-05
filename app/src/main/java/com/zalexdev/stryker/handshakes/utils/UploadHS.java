@@ -5,7 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -23,7 +23,7 @@ import java.util.TimerTask;
 /**
  * This class uploads the hash to onlinehashcrack.com and returns the result
  */
-public class UploadHS extends AsyncTask<Void, String, Integer> {
+public class UploadHS extends StrykerTask<String, Integer> {
     public String exec = Core.EXECUTE;
     public String path;
     public String email;
@@ -36,14 +36,9 @@ public class UploadHS extends AsyncTask<Void, String, Integer> {
         path = p;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected Integer doInBackground(Void... command) {
+    protected Integer doInBackground() {
         String line;
         Integer state = 0;
         try {
@@ -83,14 +78,10 @@ public class UploadHS extends AsyncTask<Void, String, Integer> {
 
     @Override
     protected void onPostExecute(Integer result) {
-        super.onPostExecute(result);
-
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
     public Integer checkhs(ArrayList<String> output){

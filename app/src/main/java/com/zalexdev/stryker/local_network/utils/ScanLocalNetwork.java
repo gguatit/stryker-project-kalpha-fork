@@ -6,7 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Notification;
 import android.content.Context;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
@@ -25,7 +25,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ScanLocalNetwork extends AsyncTask<Void, String, ArrayList<Device>> {
+public class ScanLocalNetwork extends StrykerTask<String, ArrayList<Device>> {
     public String exec = Core.EXECUTE;
     public String ip;
     public Core core;
@@ -40,14 +40,9 @@ public class ScanLocalNetwork extends AsyncTask<Void, String, ArrayList<Device>>
         activity = a;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected ArrayList<Device> doInBackground(Void... command) {
+    protected ArrayList<Device> doInBackground() {
         String line;
         ArrayList<Device> d = new ArrayList<>();
         try {
@@ -64,7 +59,7 @@ public class ScanLocalNetwork extends AsyncTask<Void, String, ArrayList<Device>>
             BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
             while ((line = br.readLine()) != null) {
                 nmapoutput.add(line);
-                onProgressUpdate(line);
+                publish(line);
                 if (line.contains("LOCALSCANFINISHED")) {//detect scan finished
                     d = localdevices(nmapoutput);
                 }
@@ -88,15 +83,12 @@ public class ScanLocalNetwork extends AsyncTask<Void, String, ArrayList<Device>>
 
     @Override
     protected void onPostExecute(ArrayList<Device> result) {
-        super.onPostExecute(result);
-
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
+    protected void onProgress(String value) {
         activity.runOnUiThread(() -> {
-            Matcher per = Pattern.compile("[0-9]*\\.[0-9]+%").matcher(values[0]);
+            Matcher per = Pattern.compile("[0-9]*\\.[0-9]+%").matcher(value);
             if (per.find()){
                 setProg(progress,(int) Double.parseDouble(per.group().replace("%","")));
             }

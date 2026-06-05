@@ -4,7 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 /**
  * This class is used to run the wps brute attack
  */
-public class BruteWps extends AsyncTask<Void, String, WiFINetwork> {
+public class BruteWps extends StrykerTask<String, WiFINetwork> {
     public String exec = Core.EXECUTE;
     public String chroot;
     public Activity mActivity;
@@ -44,15 +44,9 @@ public class BruteWps extends AsyncTask<Void, String, WiFINetwork> {
         wlan = w;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected WiFINetwork doInBackground(Void... command) {
+    protected WiFINetwork doInBackground() {
         String line;
         WiFINetwork result = new WiFINetwork();
 
@@ -95,7 +89,7 @@ public class BruteWps extends AsyncTask<Void, String, WiFINetwork> {
             br.close();
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
-                onProgressUpdate(line);
+                publish(line);
                 outerror.add(line);
             }
             core.writetolog(out, false);
@@ -121,9 +115,7 @@ public class BruteWps extends AsyncTask<Void, String, WiFINetwork> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
     public WiFINetwork issuccess(ArrayList<String> out) {

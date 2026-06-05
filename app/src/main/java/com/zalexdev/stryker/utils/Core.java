@@ -1,6 +1,6 @@
 package com.zalexdev.stryker.utils;
 
-import static android.content.Context.VIBRATOR_SERVICE;
+
 import static android.content.Context.WIFI_SERVICE;
 import static android.os.Environment.getExternalStorageDirectory;
 
@@ -16,14 +16,14 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
+
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.preference.PreferenceManager;
+import android.os.VibratorManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -88,7 +88,7 @@ public class Core {
     public Core(Context context1) {
 
         context = context1;
-        preferences = PreferenceManager.getDefaultSharedPreferences(context1);
+        preferences = context1.getSharedPreferences("stryker_prefs", Context.MODE_PRIVATE);
     }
 
     public Context getContext2() {
@@ -102,6 +102,7 @@ public class Core {
      * @param psk The password for the network.
      * @return The netId of the network that was just connected.
      */
+    @SuppressWarnings("deprecation")
     public int connectWiFi2(String ssid, String psk){
         WifiConfiguration wifiConfig = new WifiConfiguration();
         wifiConfig.SSID = String.format("\"%s\"", ssid);
@@ -118,6 +119,7 @@ public class Core {
      *
      * @param netid The network id of the network you want to remove.
      */
+    @SuppressWarnings("deprecation")
     public void delwifi(int netid){
         WifiManager wifiManager = (WifiManager)context.getSystemService(WIFI_SERVICE);
         wifiManager.removeNetwork(netid);
@@ -191,7 +193,7 @@ public class Core {
      * @return An ArrayList of Strings.
      */
     public ArrayList<String> getListString(String key) {
-        return new ArrayList<String>(Arrays.asList(TextUtils.split(preferences.getString(key, ""), "‚‗‚")));
+        return new ArrayList<String>(Arrays.asList(TextUtils.split(preferences.getString(key, ""), "|")));
     }
     /**
      * *This function is used to convert a list of integers into a list of integers
@@ -200,7 +202,7 @@ public class Core {
      * @return An ArrayList of Integers.
      */
     public ArrayList<Integer> getListInt(String key) {
-        String[] myList = TextUtils.split(preferences.getString(key, ""), "‚‗‚");
+        String[] myList = TextUtils.split(preferences.getString(key, ""), "|");
         ArrayList<String> arrayToList = new ArrayList<String>(Arrays.asList(myList));
         ArrayList<Integer> newList = new ArrayList<Integer>();
 
@@ -240,11 +242,11 @@ public class Core {
     public void putListString(String key, ArrayList<String> stringList) {
         isNull(key);
         String[] myStringList = stringList.toArray(new String[stringList.size()]);
-        preferences.edit().putString(key, TextUtils.join("‚‗‚", myStringList)).apply();
+        preferences.edit().putString(key, TextUtils.join("|", myStringList)).apply();
     }
     public void putListInt(String key, ArrayList<Integer> intList) {
         Integer[] myIntList = intList.toArray(new Integer[intList.size()]);
-        preferences.edit().putString(key, TextUtils.join("‚‗‚", myIntList)).apply();
+        preferences.edit().putString(key, TextUtils.join("|", myIntList)).apply();
     }
     public void putBoolean(String key, boolean value) {
         isNull(key);
@@ -433,11 +435,17 @@ public class Core {
     }
 
     // Vibrating the phone for a certain amount of time.
+    @SuppressWarnings("deprecation")
     public void vibrate(int mil) {
-        if (Build.VERSION.SDK_INT >= 26) {
-            ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(VibrationEffect.createOneShot(mil, VibrationEffect.DEFAULT_AMPLITUDE));
+        if (Build.VERSION.SDK_INT >= 31) {
+            VibratorManager vm = (VibratorManager) context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
+            if (vm != null) { vm.getDefaultVibrator().vibrate(VibrationEffect.createOneShot(mil, VibrationEffect.DEFAULT_AMPLITUDE)); }
+        } else if (Build.VERSION.SDK_INT >= 26) {
+            Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            if (v != null) { v.vibrate(VibrationEffect.createOneShot(mil, VibrationEffect.DEFAULT_AMPLITUDE)); }
         } else {
-            ((Vibrator) context.getSystemService(VIBRATOR_SERVICE)).vibrate(mil);
+            Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+            if (v != null) { v.vibrate(mil); }
         }
     }
 
@@ -676,7 +684,7 @@ public class Core {
     // Checking if the user is root.
     public boolean checkroot() {
         try {
-            return new CheckRoot().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+            return new CheckRoot().execute().get();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             return  false;
@@ -768,8 +776,16 @@ public class Core {
      */
     public ArrayList<Module> getModules(){
         ArrayList<Module> modules = new ArrayList<>();
-        JSONObject getmodules = getjsonbyurl("https://raw.githubusercontent.com/stryker-project/stryker-modules/main/modules.list");
         try {
+            java.io.InputStream is = context.getAssets().open("modules_list.json");
+            java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(is));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            reader.close();
+            JSONObject getmodules = new JSONObject(sb.toString());
             if (getmodules.has("status") && getmodules.getBoolean("status")){
                 JSONArray mlist = getmodules.getJSONArray("list");
                 for (int i = 0;i<mlist.length();i++){
@@ -786,7 +802,7 @@ public class Core {
                     modules.add(m);
                 }
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return  modules;

@@ -3,7 +3,6 @@ package com.zalexdev.stryker.nmap;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -92,7 +91,7 @@ public class NmapScanner extends Fragment {
             checked.add(mark_online.isChecked());
             new Thread(() -> {
                 try {
-                    now = new ScanTarget(q, checked, context, activity, output).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                    now = new ScanTarget(q, checked, context, activity, output).execute().get();
 
                 } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();

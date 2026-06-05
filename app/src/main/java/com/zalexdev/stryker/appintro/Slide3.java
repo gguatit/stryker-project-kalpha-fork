@@ -10,7 +10,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -36,6 +35,7 @@ import com.zalexdev.stryker.Dashboard;
 import com.zalexdev.stryker.MainActivity;
 import com.zalexdev.stryker.R;
 import com.zalexdev.stryker.utils.CheckDir;
+import com.zalexdev.stryker.utils.CheckFile;
 import com.zalexdev.stryker.utils.Core;
 import com.zalexdev.stryker.utils.CustomCommand;
 
@@ -94,13 +94,17 @@ public class Slide3 extends Fragment {
 
             new Thread(() -> {
                 clear();
+                String tarPath = core.getStorage() + "Download/stryker.tar.gz";
                 boolean core_ok;
-                if (core.is64Bit()){
-                    core_ok = download("https://github.com/stryker-project/stryker-chroot/releases/download/2.0R/Stryker2R.tar.gz", "stryker.tar.gz", progress_status, progress);
-                }else {
-                    core_ok = download("https://github.com/stryker-project/stryker-chroot/releases/download/2.0R/Stryker2R-32bit.tar.gz", "stryker.tar.gz", progress_status, progress);
+                try {
+                    core_ok = new CheckFile(tarPath).execute().get();
+                } catch (Exception e) {
+                    core_ok = false;
                 }
-                if (core_ok) {
+                if (!core_ok) {
+                    setText(title, "Place chroot tarball at:\n/storage/emulated/0/Download/stryker.tar.gz\nthen restart the app", true);
+                    return;
+                }
                     setText(title, core.str("install_unpack"), true);
                     setInter(progress, true);
                     setText(title, core.str("install3"), true);
@@ -116,11 +120,7 @@ public class Slide3 extends Fragment {
                         progress_status.setVisibility(View.INVISIBLE);
                         core.MoveNext(mPager);
                     });
-
-                } else {
-                    setText(title, context.getResources().getString(R.string.fail), true);
-                }
-            }).start();
+                }).start();
         });
         return view;
     }

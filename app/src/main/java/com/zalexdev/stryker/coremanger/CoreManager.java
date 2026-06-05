@@ -8,7 +8,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -119,7 +118,7 @@ public class CoreManager extends Fragment {
                 core.toaster(getString(installing));
                 new Thread(() -> {
                     try {
-                        Boolean ok = new InstallPipPackage(q,core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                        Boolean ok = new InstallPipPackage(q,core).execute().get();
                         if (ok){
                             toaster(q+core.str("installedd"));
                         }else{
@@ -180,12 +179,12 @@ public class CoreManager extends Fragment {
         cancel.setOnClickListener(view -> dialog.dismiss());
         new Thread(() -> {
             try {
-                Boolean inet  = new CheckInet().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                Boolean inet  = new CheckInet().execute().get();
                 if (inet){
                     activity.runOnUiThread(dialog::dismiss);
                 }else{
                     boolean o = core.remountcore();
-                    inet  = new CheckInet().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                    inet  = new CheckInet().execute().get();
                     if (inet){
                         activity.runOnUiThread(dialog::dismiss);
                     }else {

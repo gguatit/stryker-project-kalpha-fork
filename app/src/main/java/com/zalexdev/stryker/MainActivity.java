@@ -13,7 +13,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -26,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
         checkforusb();
         core.putString("chroot_path", "/data/local/stryker/release/");
 
-        new CustomCommand("chmod 777 -R /data/data/com.zalexdev.stryker/", core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new CustomCommand("chmod 777 -R /data/data/com.zalexdev.stryker/", core).execute();
         if (night==0 && core.getBoolean("first_open")){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }else if (night==1){
@@ -318,6 +318,16 @@ public class MainActivity extends AppCompatActivity {
             menu.collapse();
         });
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (menu.isExpanded()) {
+                    finish();
+                } else {
+                    menu.expand();
+                }
+            }
+        });
 
     }
 
@@ -464,7 +474,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        new CustomCommand("chmod 777 -R /data/data/com.zalexdev.stryker/", new Core(this)).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new CustomCommand("chmod 777 -R /data/data/com.zalexdev.stryker/", new Core(this)).execute();
     }
 
 
@@ -557,13 +567,5 @@ public class MainActivity extends AppCompatActivity {
             deviceid = string2 + ":" + string3;
         }
         return deviceid;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (menu.isExpanded()){
-        super.onBackPressed();}else{
-            menu.expand();
-        }
     }
 }

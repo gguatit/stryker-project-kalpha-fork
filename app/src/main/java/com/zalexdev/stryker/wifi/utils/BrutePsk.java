@@ -10,7 +10,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import com.zalexdev.stryker.utils.StrykerTask;
 import android.os.Build;
 import android.util.Log;
 import android.widget.TextView;
@@ -33,7 +33,7 @@ import java.io.OutputStream;
 /**
  * BrutePsk is a class that is used to brute force the PSK of a network
  */
-public class BrutePsk extends AsyncTask<Void, String, WiFINetwork> {
+public class BrutePsk extends StrykerTask<String, WiFINetwork> {
     public Activity mActivity;
     public TextView prog;
     public String ssid;
@@ -53,15 +53,9 @@ public class BrutePsk extends AsyncTask<Void, String, WiFINetwork> {
         path = p;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-
-    }
-
     @SuppressLint("WrongThread")
     @Override
-    protected WiFINetwork doInBackground(Void... command) {
+    protected WiFINetwork doInBackground() {
         WiFINetwork result = new WiFINetwork();
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String psk;
@@ -104,9 +98,7 @@ public class BrutePsk extends AsyncTask<Void, String, WiFINetwork> {
     }
 
     @Override
-    protected void onProgressUpdate(String... values) {
-        super.onProgressUpdate(values);
-
+    protected void onProgress(String value) {
     }
 
 
@@ -139,7 +131,7 @@ public class BrutePsk extends AsyncTask<Void, String, WiFINetwork> {
             br.close();
             br = new BufferedReader(new InputStreamReader(stderr));
             while ((line = br.readLine()) != null) {
-                onProgressUpdate(line);
+                publish(line);
 
             }
 
@@ -161,7 +153,7 @@ public class BrutePsk extends AsyncTask<Void, String, WiFINetwork> {
         String CHANNEL_ID = "BruteForce PSK";
         NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, "BruteForce PSK", NotificationManager.IMPORTANCE_LOW);
 
-        NotificationCompat.Builder b = new NotificationCompat.Builder(core.getContext2());
+        NotificationCompat.Builder b = new NotificationCompat.Builder(core.getContext2(), "stryker_channel");
 
         b.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)

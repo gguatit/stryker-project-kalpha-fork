@@ -4,8 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -115,11 +115,11 @@ public class LocalMain extends Fragment {
         Thread scan = new Thread(() -> {
             try {
                 //Getting network mask
-                String mask = new GetNetworkMask(core).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                String mask = new GetNetworkMask(core).execute().get();
                 mask = mask.substring(0, mask.length() - 3) + "/24";
                 if (!new CheckDir("/storage/emulated/0/Stryker/exploits").execute().get()){new CustomCommand("cp -R /data/local/stryker/release/exploits/ /storage/emulated/0/Stryker/exploits",core).execute(); }else{
                 core.updateexploits();}
-                ArrayList<Device> devices = new ScanLocalNetwork(mask, context,progress,activity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                ArrayList<Device> devices = new ScanLocalNetwork(mask, context,progress,activity).execute().get();
                 //Check is scan is ok
 
                 int i = 0;
@@ -128,7 +128,7 @@ public class LocalMain extends Fragment {
                     new Thread(() -> {
                         try {
                             if(context!=null) {
-                                Device temp = new ScanLocalDevice(d.getIp(), context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR).get();
+                                Device temp = new ScanLocalDevice(d.getIp(), context).execute().get();
                                 if (temp.getMac().equals(core.str("scanning"))) {
                                     temp.setMac(devices.get(finalI).getMac());
                                     temp.setVendor(devices.get(finalI).getVendor());
@@ -170,12 +170,16 @@ public class LocalMain extends Fragment {
     //Check is wifi on method
     public boolean wificonnected() {
         boolean ok = false;
-        if (context !=null){
-        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (mWifi.isConnected()) {
-            ok = true;
-        }}
+        if (context != null) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            Network network = cm.getActiveNetwork();
+            if (network != null) {
+                NetworkCapabilities caps = cm.getNetworkCapabilities(network);
+                if (caps != null && caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    ok = true;
+                }
+            }
+        }
         return ok;
     }
 
