@@ -33,7 +33,12 @@ public class GetPackage extends StrykerTask<String, ArrayList<Package>> {
 
     public GetPackage(String q, Core c) {
         core = c;
-        query = q;
+        query = sanitizeQuery(q);
+    }
+
+    private static String sanitizeQuery(String input) {
+        if (input == null) return "";
+        return input.replaceAll("[^a-zA-Z0-9\\-_.+ ]", "");
     }
 
     @SuppressLint("WrongThread")

@@ -35,15 +35,23 @@ public class DownloadFile extends StrykerTask<String, Boolean> {
         boolean b = false;
         final long downloadId = manager.enqueue(request);
         boolean downloading = true;
-        while (downloading) {
+        int timeout = 0;
+        while (downloading && timeout < 120) {
             DownloadManager.Query q = new DownloadManager.Query();
             q.setFilterById(downloadId);
             Cursor cursor = manager.query(q);
-            if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
+            int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+            if (status == DownloadManager.STATUS_SUCCESSFUL) {
                 downloading = false;
                 b = true;
+            } else if (status == DownloadManager.STATUS_FAILED) {
+                downloading = false;
             }
             cursor.close();
+            if (downloading) {
+                try { Thread.sleep(500); } catch (InterruptedException e) { break; }
+                timeout++;
+            }
         }
         return b;
     }

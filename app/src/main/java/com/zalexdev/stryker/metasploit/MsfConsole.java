@@ -37,6 +37,7 @@ public class MsfConsole extends Fragment {
     public OutputStream input;
     public InputStream errors;
     public InputStream output;
+    private volatile boolean running = true;
 
     public MsfConsole() {
     }
@@ -72,17 +73,16 @@ public class MsfConsole extends Fragment {
             new Thread(() -> {
                 String line = "";
                 BufferedReader br = new BufferedReader(new InputStreamReader(output));
-                while (true) {
+                while (running) {
                     try {
                         line = br.readLine();
                         if (line != null){
                             appendText(console,line+"\n");
 
                         }else {
-                            appendText(console,"waiting...");
-                            Thread.sleep(100);
+                            break;
                         }
-                    } catch (IOException | InterruptedException e) {
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
@@ -125,5 +125,19 @@ public class MsfConsole extends Fragment {
             }
         }).start();
 
+    }
+    public void stop() {
+        running = false;
+        try { if (output != null) output.close(); } catch (IOException ignored) {}
+        try { if (errors != null) errors.close(); } catch (IOException ignored) {}
+        try { if (input != null) input.close(); } catch (IOException ignored) {}
+        if (msfconsole != null) {
+            msfconsole.destroy();
+        }
+    }
+    @Override
+    public void onDestroyView() {
+        stop();
+        super.onDestroyView();
     }
 }

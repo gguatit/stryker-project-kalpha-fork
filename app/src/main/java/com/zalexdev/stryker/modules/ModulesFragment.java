@@ -68,8 +68,8 @@ public class ModulesFragment extends Fragment {
         RecyclerView mRecyclerView2 = view.findViewById(R.id.installed_list);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(activity));
         mRecyclerView2.setLayoutManager(new LinearLayoutManager(activity));
-        fixinet();
         core = new Core(context);
+        fixinet();
         mRecyclerView.setItemViewCacheSize(255);
         new Thread(() -> {
             ArrayList<Module> modules = core.getModules();

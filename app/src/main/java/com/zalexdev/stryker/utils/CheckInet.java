@@ -40,7 +40,7 @@ public class CheckInet extends StrykerTask<String, Boolean> {
             stdin.close();
             BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
             while ((line = br.readLine()) != null) {
-               if (line.contains("1 recieved")){
+               if (line.contains("1 received")){
                    result = true;
                }
             }

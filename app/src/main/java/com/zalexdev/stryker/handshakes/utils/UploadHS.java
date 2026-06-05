@@ -46,7 +46,7 @@ public class UploadHS extends StrykerTask<String, Integer> {
             OutputStream stdin = process.getOutputStream();
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
-            stdin.write((exec + "'curl -X POST -F 'email="+email+"' -F 'file=@"+path+"' https://api.onlinehashcrack.com'&&echo UPLOADFINISHED" + '\n').getBytes());
+            stdin.write((exec + "'curl -X POST -F 'email="+sanitizeShellArg(email)+"' -F 'file=@"+path+"' https://api.onlinehashcrack.com'&&echo UPLOADFINISHED" + '\n').getBytes());
             stdin.flush();
             stdin.close();
             ArrayList<String> hsoutput = new ArrayList<>();
@@ -82,6 +82,11 @@ public class UploadHS extends StrykerTask<String, Integer> {
 
     @Override
     protected void onProgress(String value) {
+    }
+
+    public static String sanitizeShellArg(String input) {
+        if (input == null) return "";
+        return input.replaceAll("['`;\\$&|()\\\\]", "");
     }
 
     public Integer checkhs(ArrayList<String> output){

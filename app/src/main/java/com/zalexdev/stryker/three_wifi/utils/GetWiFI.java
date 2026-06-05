@@ -59,8 +59,8 @@ public class GetWiFI extends StrykerTask<Void, ArrayList<WiFINetwork>> {
                         if (wifi.has("essid")){temp.setSsid(wifi.getString("essid"));}
                         if (wifi.has("key")){temp.setPsk(wifi.getString("key"));}
                         if (wifi.has("wps")){temp.setPin(wifi.getString("wps"));}
-                        if (wifi.has("lat") && wifi.has("lon")){ temp.setLon(wifi.getString("lat"));
-                        temp.setLun(wifi.getString("lon"));}
+                        if (wifi.has("lat") && wifi.has("lon")){ temp.setLon(wifi.getString("lon"));
+                        temp.setLun(wifi.getString("lat"));}
                         temp.setOK(true);
                         results.add(temp);
 

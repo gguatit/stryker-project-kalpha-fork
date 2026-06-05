@@ -56,7 +56,7 @@ public class CustomPin extends StrykerTask<String, WiFINetwork> {
             InputStream stdout = process.getInputStream();
             String cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + wlan + " --iface-down -p "+pin+" -b " + bssid;
             if (core.getBoolean("pixie_off")) {
-                cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + wlan + " -p "+pin+"-b " + bssid;
+                cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + wlan + " -p "+pin+" -b " + bssid;
                 stdin.write(("" + exec + "'" + cmd + "'" + " &&echo PINFINISHED" + '\n').getBytes());
 
             } else {

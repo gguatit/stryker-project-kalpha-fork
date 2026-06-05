@@ -77,26 +77,30 @@ public class ScanTarget extends StrykerTask<String, Boolean> {
             stdin.close();
             ArrayList<String> nmapoutput = new ArrayList<>();
             ArrayList<String> outerror = new ArrayList<>();
-            BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
-            while ((line = br.readLine()) != null) {
-                nmapoutput.add(line);
-                String finalLine = line;
-                if (line.contains("SCANFINISHED")) {
-                    ok = true;
-                    break;
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(stdout));
+                while ((line = br.readLine()) != null) {
+                    nmapoutput.add(line);
+                    String finalLine = line;
+                    if (line.contains("SCANFINISHED")) {
+                        ok = true;
+                        break;
+                    }
+                    activity.runOnUiThread(() -> output.append(finalLine + "\n"));
                 }
-                activity.runOnUiThread(() -> output.append(finalLine + "\n"));
+                br.close();
+                br = new BufferedReader(new InputStreamReader(stderr));
+                while ((line = br.readLine()) != null) {
+                    outerror.add(line);
+                    String finalLine1 = line;
+                    activity.runOnUiThread(() -> output.append("[E] " + finalLine1 + "\n"));
+                }
+                br.close();
+                core.writetolog(nmapoutput, false);
+                core.writetolog(outerror, true);
+            } finally {
+                checkprg.cancel();
             }
-            br.close();
-            br = new BufferedReader(new InputStreamReader(stderr));
-            while ((line = br.readLine()) != null) {
-                outerror.add(line);
-                String finalLine1 = line;
-                activity.runOnUiThread(() -> output.append("[E] " + finalLine1 + "\n"));
-            }
-            core.writetolog(nmapoutput, false);
-            core.writetolog(outerror, true);
-            br.close();
             process.waitFor();
             process.destroy();
         } catch (IOException | InterruptedException e) {

@@ -614,10 +614,9 @@ public class Core {
             blue.setSuccesspatern("VULNERABLE");
             blue.setLang("Python");
             saveExploit(blue);
-            exploits = getListString("exploits");
-            for (String e : exploits){
-                list.add(unparseExploit(e));
-            }
+            list.add(eternal);
+            list.add(ghost);
+            list.add(blue);
         }
         return list;
     }

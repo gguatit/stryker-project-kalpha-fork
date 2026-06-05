@@ -50,6 +50,7 @@ import com.zalexdev.stryker.utils.Core;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
 
@@ -64,6 +65,10 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
     public CutNetwork cut = null;
     public  BottomSheetDialog localdialog = null;
     public String dialogip = "";
+    public CountDownLatch portLatch;
+    public CountDownLatch argLatch;
+    public CountDownLatch waitLatch;
+    public CountDownLatch runAllLatch;
 
 
     public LocalAdapter(Context context2, Activity mActivity, ArrayList<Device> devs) {
@@ -277,13 +282,15 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
                             if (ar.contains("MAC")){exploit.setMac(mac);ar.remove("MAC");}
                             if (ar.contains("GW")){exploit.setGw(devices.get(0).getIp());ar.remove("GW");}
                             if (ar.contains("PORT")){
+                                portLatch = new CountDownLatch(1);
                                 activity.runOnUiThread(() -> selectPort(port));
-                                while (portcustom.equals("")){Log.d("Debug: ", "run: test");}
+                                try { portLatch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
                                 exploit.setPort(portcustom);
                                 ar.remove("PORT");portcustom="";
                             }
                             String cmd = exploit.genereteLaunchCommand();
                             for (String s : ar){
+                                argLatch = new CountDownLatch(1);
                                 final String[] temp = {""};
                                 activity.runOnUiThread(() -> {
                                     final Dialog valuedialog = new Dialog(context);
@@ -296,12 +303,11 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
                                     ok.setOnClickListener(view1 -> {
                                         temp[0] = valueedit.getText().toString();
                                         valuedialog.dismiss();
+                                        argLatch.countDown();
                                     });
                                     valuedialog.show();
                                 });
-                                while (temp[0].equals("")){
-                                    Log.d("Debug: ","test");
-                                }
+                                try { argLatch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
                                 cmd = cmd.replace("{"+s+"}",temp[0]);
 
                             }
@@ -330,6 +336,7 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
                                 final int[] success = {0};
                                 StringBuilder res = new StringBuilder();
                                 res.append(" ");
+                                waitLatch = new CountDownLatch(1);
                                 new Thread(() -> {
                                     boolean result = false;
                                     try {result = new BasicExploitLaunch(exploit.getSuccesspatern(), finalCmd1,core).execute().get(); } catch (ExecutionException | InterruptedException executionException) {executionException.printStackTrace();}
@@ -337,11 +344,12 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
                                         res.append(exploit.getTitle()).append(";");
                                         success[0]++;}
                                     wait[0]++;
+                                    waitLatch.countDown();
                                     progper[0] += padd;
                                     setProg(prog,progper[0]);
                                 }).start();
                                 new Thread(() -> {
-                                    while (wait[0] != 1){Log.d("Debug: ","waiting...");}
+                                    try { waitLatch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }
                                     if (success[0] == 0){setText(progress,core.str("sorry_not_vuln"));setProgColor(prog,image,1);}
                                     else {setText(progress,core.str("vuln_for")+res.toString());setProgColor(prog,image,2); }
                                     setText(cancel,"OK");
@@ -402,18 +410,20 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
         final int[] success = {0};
         StringBuilder res = new StringBuilder();
         res.append(" ");
+        runAllLatch = new CountDownLatch(exploits.size());
         for (Exploit e : exploits){
             new Thread(() -> {
                 boolean result = false;
                 try {result = new BasicExploitLaunch(e.getSuccesspatern(),e.genereteLaunchCommand(),core).execute().get(); } catch (ExecutionException | InterruptedException executionException) {executionException.printStackTrace();}
                 if (result){res.append(e.getTitle()+";");
                     success[0]++;}
-                wait[0]++;
-                progper[0] += padd;
-                setProg(prog,progper[0]);
-            }).start();}
+                    wait[0]++;
+                    runAllLatch.countDown();
+                    progper[0] += padd;
+                    setProg(prog,progper[0]);
+                }).start();}
         new Thread(() -> {
-            while (wait[0] != exploits.size()){Log.d("Debug: ","waiting...");}
+            try { runAllLatch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }
             if (success[0] == 0){setText(progress,core.str("not_vuln_local"));setProgColor(prog,image,1);}
             else {setText(progress,core.str("vuln_for")+res.toString());setProgColor(prog,image,2); }
             setText(cancel,"OK");
@@ -541,6 +551,7 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
             builder.setSingleChoiceItems(port_list, checkedItem, (dialog, which) -> {
                 portcustom = port_list[which];
                 dialog.dismiss();
+                if (portLatch != null) { portLatch.countDown(); }
             });
             AlertDialog dialog = builder.create();
             dialog.show();

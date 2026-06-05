@@ -31,7 +31,7 @@ public class GetApiKeys extends StrykerTask<Void, Cabinet> {
     @Override
     protected Cabinet doInBackground() {
         Cabinet cabinet = new Cabinet(context);
-        Log.e("3wifi", login + pass);
+        Log.d("3wifi", "Fetching API keys...");
         try {
             String postUrl = "https://3wifi.stascorp.com/api/apikeys";
             String response = Jsoup.connect(postUrl).timeout(6000).ignoreContentType(true)

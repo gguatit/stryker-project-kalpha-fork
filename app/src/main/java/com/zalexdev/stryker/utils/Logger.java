@@ -93,7 +93,8 @@ public class Logger {
         }else if (type == 3){
             temp.append(ERROR);
         }
-        write(line);
+        temp.append(line);
+        write(temp.toString());
     }
 
 }

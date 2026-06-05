@@ -16,9 +16,9 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 BUSYBOX=/data/data/$APP_PGK_NAME/files/busybox
 
 ## Define stryker binaries.
-chmod 777 /data/data/$APP_PGK_NAME/files/busybox
-chmod 777 /data/data/$APP_PGK_NAME/files/chroot_exec
-chmod 777 /data/data/$APP_PGK_NAME/files/boot_bash
+chmod 755 /data/data/$APP_PGK_NAME/files/busybox
+chmod 755 /data/data/$APP_PGK_NAME/files/chroot_exec
+chmod 755 /data/data/$APP_PGK_NAME/files/boot_bash
 
 ## Define chroot path to MNT variable.
 chmod +x /data/data/$APP_PGK_NAME/shared_prefs/com.zalexdev.stryker_preferences.xml
