@@ -39,7 +39,7 @@ public class InstallPackage extends StrykerTask<String, Boolean> {
         ArrayList<String> out2 = new ArrayList<>();
         boolean p = false;
         try {
-            Process process = Runtime.getRuntime().exec("su");
+            Process process = Runtime.getRuntime().exec("su -mm");
             OutputStream stdin = process.getOutputStream();
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();

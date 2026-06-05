@@ -40,10 +40,10 @@ public class FixInet extends StrykerTask<String, Boolean> {
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
             stdin.write((Core.EXECUTE+" ash" + '\n').getBytes());
-            stdin.write((" addgroup -g 3003 inet" + '\n').getBytes());
-            stdin.write((" addgroup root inet" + '\n').getBytes());
-            stdin.write((" echo \"nameserver 8.8.8.8\" | tee -a /etc/resolv.conf" + '\n').getBytes());
-            stdin.write((" echo \"nameserver 8.8.4.4\" | tee -a /etc/resolv.conf" + '\n').getBytes());
+            stdin.write((" > /etc/resolv.conf" + '\n').getBytes());
+            stdin.write((" echo \"nameserver 1.1.1.1\" >> /etc/resolv.conf" + '\n').getBytes());
+            stdin.write((" echo \"nameserver 8.8.8.8\" >> /etc/resolv.conf" + '\n').getBytes());
+            stdin.write((" echo \"nameserver 9.9.9.9\" >> /etc/resolv.conf" + '\n').getBytes());
             stdin.write(("exit\n").getBytes());
             stdin.flush();
             stdin.close();

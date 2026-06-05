@@ -35,7 +35,7 @@ public class CheckInet extends StrykerTask<String, Boolean> {
             Process process = Runtime.getRuntime().exec("su -mm");
             OutputStream stdin = process.getOutputStream();
             InputStream stdout = process.getInputStream();
-            stdin.write((Core.EXECUTE+" 'ping -c 1 zalex.dev'" + '\n').getBytes());
+            stdin.write((Core.EXECUTE+" 'ping -c 1 1.1.1.1'" + '\n').getBytes());
             stdin.write(("exit\n").getBytes());
             stdin.flush();
             stdin.close();
@@ -46,11 +46,10 @@ public class CheckInet extends StrykerTask<String, Boolean> {
                }
             }
             br.close();
-            process.waitFor(60, TimeUnit.SECONDS);
-            process.destroy();
-            if (process.exitValue() == 0) {
+            if (process.waitFor(60, TimeUnit.SECONDS) && process.exitValue() == 0) {
                 result = true;
             }
+            process.destroy();
         } catch (IOException e) {
             Log.d("Debug: ", "An IOException was caught: " + e.getMessage());
         } catch (InterruptedException ex) {

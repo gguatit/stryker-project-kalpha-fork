@@ -112,9 +112,12 @@ f_umount_sdcard() {
 f_is_mntpoint
 res=$?
 case $res in
-1)
+0)
     echo "[!] $MNT unmounting chroot now..."
     f_dir_umount
+    ;;
+1)
+    echo "[!] $MNT directory is not mounted, nothing to do."
     ;;
 *)
     echo "[!] $MNT directory is not existed! Aborting..."
