@@ -58,9 +58,9 @@ public class PixieDust extends StrykerTask<String, WiFINetwork> {
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
 
-            String cmd = "timeout 45 python3 -u /CORE/PixieWps/pixie.py -i " + core.getString("wlan_scan") + " --iface-down -K -F -b " + bssid;
+            String cmd = "timeout 45 python3 -u /CORE/PixieWps/pixie.py -i " + sanitizeShellArg(core.getString("wlan_scan")) + " --iface-down -K -F -b " + sanitizeShellArg(bssid);
             if (core.getBoolean("pixie_off")) {
-                cmd = "timeout 45 python3 -u /CORE/PixieWps/pixie.py -i " + core.getString("wlan_scan") + " -K -F -b " + bssid;
+                cmd = "timeout 45 python3 -u /CORE/PixieWps/pixie.py -i " + sanitizeShellArg(core.getString("wlan_scan")) + " -K -F -b " + sanitizeShellArg(bssid);
                 stdin.write((exec + " '" + cmd + "'" + " &&echo PIXIEFINISHED" + '\n').getBytes());
             } else {
                 stdin.write(("svc wifi disable&&sleep 2&&" + exec + " '" + cmd + "'" + " &&echo PIXIEFINISHED&&sleep 2&&svc wifi enable" + '\n').getBytes());
@@ -179,6 +179,11 @@ public class PixieDust extends StrykerTask<String, WiFINetwork> {
 
     public Spanned green(String out) {
         return Html.fromHtml("<font color='#19D121'>" + out + "</font>", Html.FROM_HTML_MODE_LEGACY);
+    }
+
+    private String sanitizeShellArg(String input) {
+        if (input == null) return "";
+        return input.replaceAll("['`;$&|()\\\\]", "");
     }
 
     public Spanned white(String out) {

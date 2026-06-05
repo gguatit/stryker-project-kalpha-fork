@@ -42,8 +42,10 @@ public class ScanTarget extends StrykerTask<String, Boolean> {
     protected Boolean doInBackground() {
         String line;
         Boolean ok = false;
+        Process process = null;
+        Timer checkprg = null;
         try {
-            Process process = Runtime.getRuntime().exec("su");
+            process = Runtime.getRuntime().exec("su");
             OutputStream stdin = process.getOutputStream();
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
@@ -61,14 +63,13 @@ public class ScanTarget extends StrykerTask<String, Boolean> {
             if (settings.get(3)) {
                 cmd.append(" -Pn ");
             }
-            Timer checkprg = new Timer();
+            checkprg = new Timer();
             checkprg.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
                     try {
                         stdin.write(("" + '\n').getBytes());
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    } catch (IOException ignored) {
                     }
                 }
             }, 200, 1000);
@@ -105,6 +106,8 @@ public class ScanTarget extends StrykerTask<String, Boolean> {
             process.destroy();
         } catch (IOException | InterruptedException e) {
             Log.d("Debug: ", "An IOException was caught: " + e.getMessage());
+            if (checkprg != null) checkprg.cancel();
+            if (process != null) process.destroy();
         }
         return ok;
     }

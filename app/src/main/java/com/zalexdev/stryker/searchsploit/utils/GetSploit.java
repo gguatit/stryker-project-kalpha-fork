@@ -41,7 +41,7 @@ public class GetSploit extends StrykerTask<String, ArrayList<Sploit>> {
             OutputStream stdin = process.getOutputStream();
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
-            stdin.write((exec + "'/modules/Searchsploit/exploitdb/searchsploit " + query + "  --json'" + '\n').getBytes());
+            stdin.write((exec + "'/modules/Searchsploit/exploitdb/searchsploit " + sanitizeShellArg(query) + "  --json'" + '\n').getBytes());
             stdin.flush();
             stdin.close();
             ArrayList<String> out2 = new ArrayList<>();
@@ -76,6 +76,11 @@ public class GetSploit extends StrykerTask<String, ArrayList<Sploit>> {
 
     @Override
     protected void onProgress(String value) {}
+
+    private String sanitizeShellArg(String input) {
+        if (input == null) return "";
+        return input.replaceAll("['`;$&|()\\\\]", "");
+    }
 
     public ArrayList<Sploit> parse(String out) {
         ArrayList<Sploit> res = new ArrayList<>();

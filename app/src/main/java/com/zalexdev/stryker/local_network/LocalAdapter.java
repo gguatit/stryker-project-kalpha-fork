@@ -52,6 +52,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 
 
@@ -65,8 +66,6 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
     public CutNetwork cut = null;
     public  BottomSheetDialog localdialog = null;
     public String dialogip = "";
-    public CountDownLatch portLatch;
-    public CountDownLatch argLatch;
     public CountDownLatch waitLatch;
     public CountDownLatch runAllLatch;
 
@@ -282,15 +281,17 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
                             if (ar.contains("MAC")){exploit.setMac(mac);ar.remove("MAC");}
                             if (ar.contains("GW")){exploit.setGw(devices.get(0).getIp());ar.remove("GW");}
                             if (ar.contains("PORT")){
-                                portLatch = new CountDownLatch(1);
-                                activity.runOnUiThread(() -> selectPort(port));
-                                try { portLatch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                                final CountDownLatch portLatch = new CountDownLatch(1);
+                                activity.runOnUiThread(() -> selectPort(port, portLatch));
+                                boolean timedOut = false;
+                                try { timedOut = !portLatch.await(30, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); timedOut = true; }
+                                if (timedOut) { return; }
                                 exploit.setPort(portcustom);
                                 ar.remove("PORT");portcustom="";
                             }
                             String cmd = exploit.genereteLaunchCommand();
                             for (String s : ar){
-                                argLatch = new CountDownLatch(1);
+                                final CountDownLatch argLatch = new CountDownLatch(1);
                                 final String[] temp = {""};
                                 activity.runOnUiThread(() -> {
                                     final Dialog valuedialog = new Dialog(context);
@@ -305,9 +306,12 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
                                         valuedialog.dismiss();
                                         argLatch.countDown();
                                     });
+                                    valuedialog.setOnDismissListener(di -> argLatch.countDown());
                                     valuedialog.show();
                                 });
-                                try { argLatch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+                                boolean timedOut = false;
+                                try { timedOut = !argLatch.await(30, TimeUnit.SECONDS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); timedOut = true; }
+                                if (timedOut) { return; }
                                 cmd = cmd.replace("{"+s+"}",temp[0]);
 
                             }
@@ -538,7 +542,7 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
      *
      * @param ports The list of ports to choose from.
      */
-    public void selectPort(ArrayList<String> ports) {
+    public void selectPort(ArrayList<String> ports, CountDownLatch latch) {
         port = "";
         if (!ports.isEmpty()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -551,9 +555,10 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
             builder.setSingleChoiceItems(port_list, checkedItem, (dialog, which) -> {
                 portcustom = port_list[which];
                 dialog.dismiss();
-                if (portLatch != null) { portLatch.countDown(); }
+                latch.countDown();
             });
             AlertDialog dialog = builder.create();
+            dialog.setOnDismissListener(di -> latch.countDown());
             dialog.show();
 
         }

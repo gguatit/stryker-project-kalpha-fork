@@ -54,9 +54,9 @@ public class CustomPin extends StrykerTask<String, WiFINetwork> {
             OutputStream stdin = process.getOutputStream();
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
-            String cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + wlan + " --iface-down -p "+pin+" -b " + bssid;
+            String cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + sanitizeShellArg(wlan) + " --iface-down -p " + sanitizeShellArg(pin) + " -b " + sanitizeShellArg(bssid);
             if (core.getBoolean("pixie_off")) {
-                cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + wlan + " -p "+pin+" -b " + bssid;
+                cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + sanitizeShellArg(wlan) + " -p " + sanitizeShellArg(pin) + " -b " + sanitizeShellArg(bssid);
                 stdin.write(("" + exec + "'" + cmd + "'" + " &&echo PINFINISHED" + '\n').getBytes());
 
             } else {
@@ -134,6 +134,11 @@ public class CustomPin extends StrykerTask<String, WiFINetwork> {
         canceled = true;
         process.destroy();
 
+    }
+
+    private String sanitizeShellArg(String input) {
+        if (input == null) return "";
+        return input.replaceAll("['`;$&|()\\\\]", "");
     }
 
     public void setText(String text, TextView textView) {

@@ -68,7 +68,7 @@ public class BruteHandshake extends StrykerTask<String, WiFINetwork> {
             OutputStream stdin = process.getOutputStream();
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
-            stdin.write((exec + "'aircrack-ng -w " + wordlist + " " + path + " '" + '\n').getBytes());
+            stdin.write((exec + "'aircrack-ng -w " + sanitizeShellArg(wordlist) + " " + sanitizeShellArg(path) + " '" + '\n').getBytes());
             stdin.flush();
             stdin.close();
             ArrayList<String> out2 = new ArrayList<>();
@@ -149,6 +149,11 @@ public class BruteHandshake extends StrykerTask<String, WiFINetwork> {
             }
 
         });
+    }
+
+    private String sanitizeShellArg(String input) {
+        if (input == null) return "";
+        return input.replaceAll("['`;$&|()\\\\]", "");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

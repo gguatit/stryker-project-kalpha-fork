@@ -55,9 +55,9 @@ public class BruteWps extends StrykerTask<String, WiFINetwork> {
             OutputStream stdin = process.getOutputStream();
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
-            String cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + wlan + " --iface-down -B -b " + bssid;
+            String cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + sanitizeShellArg(wlan) + " --iface-down -B -b " + sanitizeShellArg(bssid);
             if (core.getBoolean("pixie_off")) {
-                cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + wlan + " -B -b " + bssid;
+                cmd = "python3 -u /CORE/PixieWps/pixie.py -i " + sanitizeShellArg(wlan) + " -B -b " + sanitizeShellArg(bssid);
                 stdin.write(("" + exec + "'" + cmd + "'" + " &&echo BRUTEFINISHED" + '\n').getBytes());
 
             } else {
@@ -169,6 +169,11 @@ public class BruteWps extends StrykerTask<String, WiFINetwork> {
         assert result != null;
         return result.replace("seconds", mActivity.getString(R.string.spin));
 
+    }
+
+    private String sanitizeShellArg(String input) {
+        if (input == null) return "";
+        return input.replaceAll("['`;$&|()\\\\]", "");
     }
 
     public String getPincode(final String input) {

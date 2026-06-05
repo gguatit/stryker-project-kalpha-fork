@@ -53,14 +53,15 @@ public class RunModule extends StrykerTask<String, Boolean> {
             InputStream stdout = process.getInputStream();
             stdin.write((Core.EXECUTE+" ash"+"\n").getBytes());
             stdin.flush();
-            stdin.write(("cd /modules/"+ formatted_name +"\n").getBytes());
+            String safeName = sanitizeShellArg(formatted_name);
+            stdin.write(("cd /modules/" + safeName + "\n").getBytes());
             stdin.flush();
             stdin.write(("chmod 777 *\n").getBytes());
             if (install){
-            stdin.write(("/modules/"+formatted_name+"/install.sh"+"\n").getBytes());
+            stdin.write(("/modules/" + safeName + "/install.sh" + "\n").getBytes());
             }
             else{
-                stdin.write(("/modules/"+formatted_name+"/delete.sh"+"\n").getBytes());
+                stdin.write(("/modules/" + safeName + "/delete.sh" + "\n").getBytes());
             }
             stdin.write(("exit\n").getBytes());
             stdin.flush();
@@ -138,6 +139,11 @@ public class RunModule extends StrykerTask<String, Boolean> {
     }
     public Spanned white(String out) {
         return Html.fromHtml("<font color='#FFFFFF'>" + out + "</font>", Html.FROM_HTML_MODE_LEGACY);
+    }
+
+    private String sanitizeShellArg(String input) {
+        if (input == null) return "";
+        return input.replaceAll("['`;$&|()\\\\]", "");
     }
 
     public Spanned red(String out) {

@@ -69,6 +69,15 @@ public class MsfConsole extends Fragment {
             input = msfconsole.getOutputStream();
             errors = msfconsole.getErrorStream();
             output = msfconsole.getInputStream();
+            new Thread(() -> {
+                try {
+                    byte[] buffer = new byte[1024];
+                    while (running) {
+                        int read = errors.read(buffer);
+                        if (read == -1) break;
+                    }
+                } catch (IOException ignored) {}
+            }).start();
             initalize();
             new Thread(() -> {
                 String line = "";
@@ -103,6 +112,7 @@ public class MsfConsole extends Fragment {
         return view;
     }
     public void appendText(TextView textView, String text) {
+        if (!running || !isAdded()) return;
         activity.runOnUiThread(() -> textView.append(text));
     }
     public void sendcommand(String cmd){
