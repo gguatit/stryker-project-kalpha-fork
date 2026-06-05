@@ -46,6 +46,7 @@ import com.zalexdev.stryker.local_network.exploits.RouterScan;
 
 import com.zalexdev.stryker.local_network.utils.CutNetwork;
 import com.zalexdev.stryker.utils.Core;
+import com.zalexdev.stryker.utils.CustomChrootCommand;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -224,6 +225,9 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
         LinearLayout rdp = localdialog.findViewById(R.id.check_rdp);
         LinearLayout admin = localdialog.findViewById(R.id.check_admin_panel);
         LinearLayout run_exploit = localdialog.findViewById(R.id.run_exploit);
+        LinearLayout smbEnum = localdialog.findViewById(R.id.smb_enum);
+        LinearLayout bruteService = localdialog.findViewById(R.id.brute_service);
+        LinearLayout snmpEnum = localdialog.findViewById(R.id.snmp_enum);
         if (!device.isShim()){
             shim.stopShimmer();
         }else{
@@ -265,6 +269,52 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
             rdp1.add(core.getExploitbyTitle("Bluekeep"));
             rdp1.get(0).setIp(ip);
             runexploits(rdp1);
+        });
+        smbEnum.setOnClickListener(view -> {
+            new Thread(() -> {
+                try {
+                    CustomChrootCommand cmd = new CustomChrootCommand("smbclient -L " + ip + " -N", core);
+                    cmd.execute().get();
+                    activity.runOnUiThread(() -> {
+                        new MaterialAlertDialogBuilder(context)
+                            .setTitle("SMB 공유 열거")
+                            .setMessage("smbclient 명령이 실행되었습니다.\n결과는 로그 파일을 확인하세요.")
+                            .setPositiveButton("닫기", (d, w) -> {})
+                            .show();
+                    });
+                } catch (Exception e) {
+                    activity.runOnUiThread(() -> core.toaster("SMB 열거 실패"));
+                }
+            }).start();
+        });
+        bruteService.setOnClickListener(view -> {
+            String[] bruteTargets = {"SSH", "FTP", "Telnet"};
+            new MaterialAlertDialogBuilder(context)
+                .setTitle("서비스 선택")
+                .setItems(bruteTargets, (dialogInterface, i) -> {
+                    String svc = bruteTargets[i].toLowerCase();
+                    String svcPort = svc.equals("ssh") ? "22" : svc.equals("ftp") ? "21" : "23";
+                    getPort(svcPort, port, ip);
+                    activity.runOnUiThread(() -> core.toaster(svc.toUpperCase() + " 무차별 대입 준비"));
+                })
+                .show();
+        });
+        snmpEnum.setOnClickListener(view -> {
+            new Thread(() -> {
+                try {
+                    CustomChrootCommand cmd = new CustomChrootCommand("snmpwalk -v2c -c public " + ip, core);
+                    cmd.execute().get();
+                    activity.runOnUiThread(() -> {
+                        new MaterialAlertDialogBuilder(context)
+                            .setTitle("SNMP 열거")
+                            .setMessage("snmpwalk 명령이 실행되었습니다.\n결과는 로그 파일을 확인하세요.")
+                            .setPositiveButton("닫기", (d, w) -> {})
+                            .show();
+                    });
+                } catch (Exception e) {
+                    activity.runOnUiThread(() -> core.toaster("SNMP 열거 실패"));
+                }
+            }).start();
         });
         // This code is creating a dialog box that allows the user to select an exploit from the list
         // of exploits.

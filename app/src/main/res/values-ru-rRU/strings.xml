@@ -59,6 +59,9 @@
     <string name="check_camera">Проверить RTSP на уязвимости </string>
     <string name="check_admin">Проверить панель на уязвимости </string>
     <string name="run_custom">Запустить эксплойт </string>
+    <string name="smb_enum">Перечислить общие ресурсы SMB</string>
+    <string name="brute_service">Брутфорс служб</string>
+    <string name="snmp_enum">Перечисление SNMP</string>
     <string name="list_of_ports">Список доступных портов </string>
     <string name="router_scan" translatable="false">Router Scan </string>
     <string name="integration">3wifi интеграция </string>

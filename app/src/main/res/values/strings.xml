@@ -59,6 +59,9 @@
     <string name="check_camera">Check RTSP for vulnerabilities </string>
     <string name="check_admin">Check the panel for vulnerabilities </string>
     <string name="run_custom">Run custom exploit </string>
+    <string name="smb_enum">SMB 공유 열거</string>
+    <string name="brute_service">서비스 무차별 대입</string>
+    <string name="snmp_enum">SNMP 열거</string>
     <string name="list_of_ports">List of available ports </string>
     <string name="router_scan" translatable="false">Router Scan </string>
     <string name="integration">3wifi integration </string>
