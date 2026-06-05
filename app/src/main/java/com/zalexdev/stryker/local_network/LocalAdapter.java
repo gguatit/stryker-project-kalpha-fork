@@ -273,46 +273,56 @@ public class LocalAdapter extends RecyclerView.Adapter<LocalAdapter.ViewHolder> 
         smbEnum.setOnClickListener(view -> {
             new Thread(() -> {
                 try {
-                    CustomChrootCommand cmd = new CustomChrootCommand("smbclient -L " + ip + " -N", core);
-                    cmd.execute().get();
-                    activity.runOnUiThread(() -> {
+                    Boolean ok = new CustomChrootCommand("smbclient -L " + ip + " -N", core).execute().get();
+                    if (activity != null) activity.runOnUiThread(() -> {
                         new MaterialAlertDialogBuilder(context)
                             .setTitle("SMB 공유 열거")
-                            .setMessage("smbclient 명령이 실행되었습니다.\n결과는 로그 파일을 확인하세요.")
+                            .setMessage(ok ? "명령 실행 성공.\n로그 파일을 확인하세요." : "명령 실행 실패. 로그를 확인하세요.")
                             .setPositiveButton("닫기", (d, w) -> {})
                             .show();
                     });
                 } catch (Exception e) {
-                    activity.runOnUiThread(() -> core.toaster("SMB 열거 실패"));
+                    if (activity != null) activity.runOnUiThread(() -> core.toaster("SMB 열거 실패"));
                 }
             }).start();
         });
         bruteService.setOnClickListener(view -> {
-            String[] bruteTargets = {"SSH", "FTP", "Telnet"};
+            String[] bruteTargets = {"SSH (포트 22)", "FTP (포트 21)", "Telnet (포트 23)"};
             new MaterialAlertDialogBuilder(context)
                 .setTitle("서비스 선택")
                 .setItems(bruteTargets, (dialogInterface, i) -> {
-                    String svc = bruteTargets[i].toLowerCase();
-                    String svcPort = svc.equals("ssh") ? "22" : svc.equals("ftp") ? "21" : "23";
-                    getPort(svcPort, port, ip);
-                    activity.runOnUiThread(() -> core.toaster(svc.toUpperCase() + " 무차별 대입 준비"));
+                    String svc = i == 0 ? "ssh" : i == 1 ? "ftp" : "telnet";
+                    String svcPort = i == 0 ? "22" : i == 1 ? "21" : "23";
+                    new Thread(() -> {
+                        try {
+                            Boolean ok = new CustomChrootCommand("hydra -l root -P /sdcard/Stryker/wordlist/rockyou.txt " + svc + "://" + ip + " -s " + svcPort, core).execute().get();
+                            if (activity != null) activity.runOnUiThread(() -> {
+                                new MaterialAlertDialogBuilder(context)
+                                    .setTitle(svc.toUpperCase() + " 무차별 대입")
+                                    .setMessage(ok ? "명령 실행 성공.\n로그 파일을 확인하세요." : "명령 실행 실패. 로그를 확인하세요.")
+                                    .setPositiveButton("닫기", (d, w) -> {})
+                                    .show();
+                            });
+                        } catch (Exception e) {
+                            if (activity != null) activity.runOnUiThread(() -> core.toaster(svc.toUpperCase() + " 무차별 대입 실패"));
+                        }
+                    }).start();
                 })
                 .show();
         });
         snmpEnum.setOnClickListener(view -> {
             new Thread(() -> {
                 try {
-                    CustomChrootCommand cmd = new CustomChrootCommand("snmpwalk -v2c -c public " + ip, core);
-                    cmd.execute().get();
-                    activity.runOnUiThread(() -> {
+                    Boolean ok = new CustomChrootCommand("snmpwalk -v2c -c public " + ip, core).execute().get();
+                    if (activity != null) activity.runOnUiThread(() -> {
                         new MaterialAlertDialogBuilder(context)
                             .setTitle("SNMP 열거")
-                            .setMessage("snmpwalk 명령이 실행되었습니다.\n결과는 로그 파일을 확인하세요.")
+                            .setMessage(ok ? "명령 실행 성공.\n로그 파일을 확인하세요." : "명령 실행 실패. 로그를 확인하세요.")
                             .setPositiveButton("닫기", (d, w) -> {})
                             .show();
                     });
                 } catch (Exception e) {
-                    activity.runOnUiThread(() -> core.toaster("SNMP 열거 실패"));
+                    if (activity != null) activity.runOnUiThread(() -> core.toaster("SNMP 열거 실패"));
                 }
             }).start();
         });
