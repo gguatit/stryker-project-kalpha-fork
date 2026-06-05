@@ -212,8 +212,7 @@ public class Slide3 extends Fragment {
         new CustomCommand("chmod 777 -R /data/data/com.zalexdev.stryker/files/", core).execute();
         new CustomCommand("mkdir " + core.getStorage() + "Stryker", core).execute();
         new CustomCommand("mkdir /data/local/stryker", core).execute();
-        new CustomCommand("rm " + core.getStorage() + "Download/stryker.tar.gz", core).execute();
-        new CustomCommand("rm -rf " + core.getStorage() + "Stryker/release", core).execute();
+        new CustomCommand("rm -rf /data/local/stryker/release", core).execute();
         new CustomCommand("rm " + core.getStorage() + "Download/stryker.apk", core).execute();
         new CustomCommand("mkdir " + core.getStorage() + "Stryker/hs", core).execute();
         new CustomCommand("mkdir " + core.getStorage() + "Stryker/captured", core).execute();

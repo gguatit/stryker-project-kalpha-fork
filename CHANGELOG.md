@@ -57,6 +57,18 @@
 
 ---
 
+### 기능 개선 — "Under Development" 해제 및 UI 개선
+
+- Metasploit 버튼: StillDeveloping → MsfConsole로 연결
+- Website 버튼: StillDeveloping → HandshakeStorage로 연결
+- Terminal 버튼: StillDeveloping → MsfConsole로 연결
+- Error 페이지(sdcard 체크 실패) 제거, 항상 Dashboard로 진입
+- 계정 아이콘 → 정보(About) 아이콘으로 변경, Account Fragment 접근 제거
+- 한국어(ko-rKR) 전체 번역 추가
+- Slide3.java: clear()에서 tarball을 확인 전에 삭제하던 치명적 버그 수정
+
+---
+
 ## [2.0] — 2022-03-28
 
 - @zalexdev 원작 릴리즈

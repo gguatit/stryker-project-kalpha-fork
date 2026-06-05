@@ -97,41 +97,28 @@ public class MainActivity extends AppCompatActivity {
          menu = findViewById(R.id.menu_expand);
         account.setOnClickListener(view -> {
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.flContent);
-            if (currentFragment instanceof Settings) {
-                menu.collapse();
-                settings.setImageDrawable(getDrawable(R.drawable.settings));
-            }
-            if (currentFragment instanceof Account) {
-                account.setImageDrawable(getDrawable(R.drawable.account));
-                menu.collapse();
-                getSupportFragmentManager().beginTransaction().replace(R.id.flContent, tempfrag).commit();
-            }else{
-
-                menu.collapse();
+            settings.setImageDrawable(getDrawable(R.drawable.settings));
+            if (currentFragment instanceof About) {
+                account.setImageDrawable(getDrawable(R.drawable.about));
+                getSupportFragmentManager().beginTransaction().replace(R.id.flContent, tempfrag != null ? tempfrag : new Dashboard()).commit();
+            } else {
                 account.setImageDrawable(getDrawable(R.drawable.close));
-                if (!(currentFragment instanceof Settings)) {
-                    tempfrag = getSupportFragmentManager().findFragmentById(R.id.flContent);}
-
-                getSupportFragmentManager().beginTransaction().replace(R.id.flContent, new Account()).commit();
+                tempfrag = getSupportFragmentManager().findFragmentById(R.id.flContent);
+                getSupportFragmentManager().beginTransaction().replace(R.id.flContent, new About()).commit();
             }
         });
         settings.setOnClickListener(view -> {
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.flContent);
-            if (currentFragment instanceof Account) {
-                account.setImageDrawable(getDrawable(R.drawable.account));
-                menu.collapse();
-            }
+            account.setImageDrawable(getDrawable(R.drawable.about));
             if (currentFragment instanceof Settings) {
                 settings.setImageDrawable(getDrawable(R.drawable.settings));
-                menu.collapse();
-                getSupportFragmentManager().beginTransaction().replace(R.id.flContent, tempfrag).commit();
-            }else{
-                menu.collapse();
+                getSupportFragmentManager().beginTransaction().replace(R.id.flContent, tempfrag != null ? tempfrag : new Dashboard()).commit();
+            } else {
                 settings.setImageDrawable(getDrawable(R.drawable.close));
-                if (!(currentFragment instanceof Account)) {
-                tempfrag = getSupportFragmentManager().findFragmentById(R.id.flContent);}
+                tempfrag = getSupportFragmentManager().findFragmentById(R.id.flContent);
                 getSupportFragmentManager().beginTransaction().replace(R.id.flContent, new Settings()).commit();
             }
+            menu.collapse();
         });
         core.checkroot();
         checkforusb();
@@ -148,14 +135,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(install);
             }
             else{
-                //
                 core.mountcore();FragmentManager fragmentManager = getSupportFragmentManager();
-                if (!new CheckDir("/data/local/stryker/release/sdcard/Stryker").execute().get()){
-                    fragmentManager.beginTransaction().replace(R.id.flContent, new Error()).commit();
-
-                }else{
                 fragmentManager.beginTransaction().replace(R.id.flContent, new Dashboard()).commit();
-                }
             }
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
@@ -202,45 +183,45 @@ public class MainActivity extends AppCompatActivity {
         MaterialCardView terminal = findViewById(R.id.menu_terminal);
         wifi.setOnClickListener(view -> {
             settings.setImageDrawable(getDrawable(R.drawable.settings));
-            account.setImageDrawable(getDrawable(R.drawable.account));
+            account.setImageDrawable(getDrawable(R.drawable.about));
             fragmentManager.beginTransaction().replace(R.id.flContent, new Wifi()).commit();
             menu.collapse();
         });
         dashboard.setOnClickListener(view -> {
             settings.setImageDrawable(getDrawable(R.drawable.settings));
-            account.setImageDrawable(getDrawable(R.drawable.account));
+            account.setImageDrawable(getDrawable(R.drawable.about));
             fragmentManager.beginTransaction().replace(R.id.flContent, new Dashboard()).commit();
             menu.collapse();
         });
         localnetwork.setOnClickListener(view -> {
             settings.setImageDrawable(getDrawable(R.drawable.settings));
-            account.setImageDrawable(getDrawable(R.drawable.account));
+            account.setImageDrawable(getDrawable(R.drawable.about));
             fragmentManager.beginTransaction().replace(R.id.flContent, new LocalMain()).commit();
             menu.collapse();
         });
         repo.setOnClickListener(view -> {
             settings.setImageDrawable(getDrawable(R.drawable.settings));
-            account.setImageDrawable(getDrawable(R.drawable.account));
+            account.setImageDrawable(getDrawable(R.drawable.about));
             fragmentManager.beginTransaction().replace(R.id.flContent, new ModulesFragment()).commit();
             menu.collapse();
         });
         manager.setOnClickListener(view -> {
             settings.setImageDrawable(getDrawable(R.drawable.settings));
-            account.setImageDrawable(getDrawable(R.drawable.account));
+            account.setImageDrawable(getDrawable(R.drawable.about));
             fragmentManager.beginTransaction().replace(R.id.flContent, new CoreManager()).commit();
             menu.collapse();
         });
         if (core.checkmod("Searchsploit")){
             searchsploit.setOnClickListener(view -> {
                 settings.setImageDrawable(getDrawable(R.drawable.settings));
-                account.setImageDrawable(getDrawable(R.drawable.account));
+                account.setImageDrawable(getDrawable(R.drawable.about));
                 fragmentManager.beginTransaction().replace(R.id.flContent, new SearchSploit()).commit();
                 menu.collapse();
             });
         }else{
             searchsploit.setOnClickListener(view -> {
                 settings.setImageDrawable(getDrawable(R.drawable.settings));
-                account.setImageDrawable(getDrawable(R.drawable.account));
+                account.setImageDrawable(getDrawable(R.drawable.about));
                 fragmentManager.beginTransaction().replace(R.id.flContent, new PlsInstallModule("Searchsploit")).commit();
                 menu.collapse();
             });
@@ -248,14 +229,14 @@ public class MainActivity extends AppCompatActivity {
         if (core.checkmod("GeoMac")){
             geo.setOnClickListener(view -> {
                 settings.setImageDrawable(getDrawable(R.drawable.settings));
-                account.setImageDrawable(getDrawable(R.drawable.account));
+                account.setImageDrawable(getDrawable(R.drawable.about));
                 fragmentManager.beginTransaction().replace(R.id.flContent, new GeoMac()).commit();
                 menu.collapse();
             });
         }else {
             geo.setOnClickListener(view -> {
                 settings.setImageDrawable(getDrawable(R.drawable.settings));
-                account.setImageDrawable(getDrawable(R.drawable.account));
+                account.setImageDrawable(getDrawable(R.drawable.about));
                 fragmentManager.beginTransaction().replace(R.id.flContent, new PlsInstallModule("GeoMac")).commit();
                 menu.collapse();
             });
@@ -263,58 +244,58 @@ public class MainActivity extends AppCompatActivity {
         if (core.checkmod("Router Scan")){
             three.setOnClickListener(view -> {
                 settings.setImageDrawable(getDrawable(R.drawable.settings));
-                account.setImageDrawable(getDrawable(R.drawable.account));
+                account.setImageDrawable(getDrawable(R.drawable.about));
                 fragmentManager.beginTransaction().replace(R.id.flContent, new LoginPage()).commit();
                 menu.collapse();
             });
             scan.setOnClickListener(view -> {
                 settings.setImageDrawable(getDrawable(R.drawable.settings));
-                account.setImageDrawable(getDrawable(R.drawable.account));
+                account.setImageDrawable(getDrawable(R.drawable.about));
                 fragmentManager.beginTransaction().replace(R.id.flContent, new RouterScanMain()).commit();
                 menu.collapse();
             });
         }else{
             three.setOnClickListener(view -> {
                 settings.setImageDrawable(getDrawable(R.drawable.settings));
-                account.setImageDrawable(getDrawable(R.drawable.account));
+                account.setImageDrawable(getDrawable(R.drawable.about));
                 fragmentManager.beginTransaction().replace(R.id.flContent, new PlsInstallModule("Router Scan")).commit();
                 menu.collapse();
             });
             scan.setOnClickListener(view -> {
                 settings.setImageDrawable(getDrawable(R.drawable.settings));
-                account.setImageDrawable(getDrawable(R.drawable.account));
+                account.setImageDrawable(getDrawable(R.drawable.about));
                 fragmentManager.beginTransaction().replace(R.id.flContent, new PlsInstallModule("Router Scan")).commit();
                 menu.collapse();
             });
         }
         metasploit.setOnClickListener(view -> {
             settings.setImageDrawable(getDrawable(R.drawable.settings));
-            account.setImageDrawable(getDrawable(R.drawable.account));
-            fragmentManager.beginTransaction().replace(R.id.flContent, new StillDeveloping()).commit();
+            account.setImageDrawable(getDrawable(R.drawable.about));
+            fragmentManager.beginTransaction().replace(R.id.flContent, new MsfConsole()).commit();
             menu.collapse();
         });
         site.setOnClickListener(view -> {
             settings.setImageDrawable(getDrawable(R.drawable.settings));
-            account.setImageDrawable(getDrawable(R.drawable.account));
-            fragmentManager.beginTransaction().replace(R.id.flContent, new StillDeveloping()).commit();
+            account.setImageDrawable(getDrawable(R.drawable.about));
+            fragmentManager.beginTransaction().replace(R.id.flContent, new HandshakeStorage()).commit();
             menu.collapse();
         });
         nmap.setOnClickListener(view -> {
             settings.setImageDrawable(getDrawable(R.drawable.settings));
-            account.setImageDrawable(getDrawable(R.drawable.account));
+            account.setImageDrawable(getDrawable(R.drawable.about));
             fragmentManager.beginTransaction().replace(R.id.flContent, new NmapScanner()).commit();
             menu.collapse();
         });
         exploits.setOnClickListener(view -> {
             settings.setImageDrawable(getDrawable(R.drawable.settings));
-            account.setImageDrawable(getDrawable(R.drawable.account));
+            account.setImageDrawable(getDrawable(R.drawable.about));
             fragmentManager.beginTransaction().replace(R.id.flContent, new ExploitScreen()).commit();
             menu.collapse();
         });
         terminal.setOnClickListener(view -> {
             settings.setImageDrawable(getDrawable(R.drawable.settings));
-            account.setImageDrawable(getDrawable(R.drawable.account));
-            fragmentManager.beginTransaction().replace(R.id.flContent, new StillDeveloping()).commit();
+            account.setImageDrawable(getDrawable(R.drawable.about));
+            fragmentManager.beginTransaction().replace(R.id.flContent, new MsfConsole()).commit();
             menu.collapse();
         });
 
