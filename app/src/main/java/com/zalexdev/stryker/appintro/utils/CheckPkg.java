@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * CheckPkg is a class that checks if a package is installed on the device
@@ -53,7 +54,7 @@ public class CheckPkg extends StrykerTask<String, Boolean> {
                 publish(line);
             }
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
         } catch (IOException e) {
             Log.d("Debug: ", "An IOException was caught: " + e.getMessage());

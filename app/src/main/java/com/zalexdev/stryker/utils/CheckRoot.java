@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class checks if the device is rooted or not
@@ -47,12 +48,7 @@ public class CheckRoot extends StrykerTask<String, Boolean> {
                 }
             }
             br.close();
-            br = new BufferedReader(new InputStreamReader(stderr));
-            while ((line = br.readLine()) != null) {
-                result = false;
-            }
-            br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
         } catch (IOException e) {
             Log.d("Debug: ", "An IOException was caught: " + e.getMessage());

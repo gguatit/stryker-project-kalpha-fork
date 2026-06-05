@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is used to launch the airodump-ng command
@@ -63,7 +64,7 @@ public class LaunchAirodump extends StrykerTask<String, ArrayList<String>> {
             br = new BufferedReader(new InputStreamReader(stderr));
 
             br.close();
-            air.waitFor();
+            air.waitFor(60, TimeUnit.SECONDS);
             air.destroy();
 
             if (air.exitValue() != 0) {

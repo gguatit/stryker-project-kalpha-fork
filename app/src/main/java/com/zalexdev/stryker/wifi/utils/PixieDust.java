@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is used to run the pixie-dust attack
@@ -93,7 +94,7 @@ public class PixieDust extends StrykerTask<String, WiFINetwork> {
             core.writetolog(out2, false);
             core.writetolog(outerror, true);
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
             issuccess = pixie(out2);
 

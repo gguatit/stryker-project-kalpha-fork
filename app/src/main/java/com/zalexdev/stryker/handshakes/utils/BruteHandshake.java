@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is used to run the aircrack-ng and brute handshake
@@ -64,7 +65,7 @@ public class BruteHandshake extends StrykerTask<String, WiFINetwork> {
         String line;
         WiFINetwork result = new WiFINetwork();
         try {
-            process = Runtime.getRuntime().exec("su");
+            process = Runtime.getRuntime().exec("su -mm");
             OutputStream stdin = process.getOutputStream();
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
@@ -93,7 +94,7 @@ public class BruteHandshake extends StrykerTask<String, WiFINetwork> {
             core.writetolog(out2, false);
             core.writetolog(outerror, true);
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
         } catch (IOException | InterruptedException e) {
             Log.d("Debug: ", "An IOException was caught: " + e.getMessage());

@@ -873,10 +873,10 @@ public class Core {
     }
     // Checking if the core is mounted. If it is not, it will mount it.
     public Boolean remountcore(){
-        try {unmountcore();
-            mountcore();
-
-            boolean o3 = new FixInet(this).execute().get();
+        try {
+            if (!unmountcore()) return false;
+            if (!mountcore()) return false;
+            if (!new FixInet(this).execute().get()) return false;
             return true;
         } catch (ExecutionException | InterruptedException e) {
             return false;
@@ -887,7 +887,7 @@ public class Core {
     public Boolean mountcore(){
         try {
            boolean o2 = new CustomCommand("/data/data/com.zalexdev.stryker/files/bootroot",this).execute().get();
-            return true;
+            return o2;
         } catch (ExecutionException | InterruptedException e) {
             return false;
         }
@@ -897,7 +897,7 @@ public class Core {
     public Boolean unmountcore(){
         try {
             boolean o2 = new CustomCommand("/data/data/com.zalexdev.stryker/files/killroot",this).execute().get();
-            return true;
+            return o2;
         } catch (ExecutionException | InterruptedException e) {
             return false;
         }

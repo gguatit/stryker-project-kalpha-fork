@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is used to install a package
@@ -59,7 +60,7 @@ public class InstallPackage extends StrykerTask<String, Boolean> {
             core.writetolog(out2, false);
             core.writetolog(outerror, true);
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
             p = process.exitValue() == 0;
         } catch (IOException | InterruptedException e) {

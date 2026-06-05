@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
 import jcifs.netbios.NbtAddress;
 
 public class ScanLocalDevice extends StrykerTask<String, Device> {
@@ -40,7 +41,7 @@ public class ScanLocalDevice extends StrykerTask<String, Device> {
         String line;
         Device d = new Device();
         try {
-            Process process = Runtime.getRuntime().exec("su");
+            Process process = Runtime.getRuntime().exec("su -mm");
             OutputStream stdin = process.getOutputStream();
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
@@ -70,7 +71,7 @@ public class ScanLocalDevice extends StrykerTask<String, Device> {
             core.writetolog(nmapoutput, false);
             core.writetolog(outerror, true);}
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
 
         } catch (IOException | InterruptedException e) {

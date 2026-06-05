@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is used to get a list of packages that match a certain query
@@ -68,7 +69,7 @@ public class GetPackage extends StrykerTask<String, ArrayList<Package>> {
             core.writetolog(out2, false);
             core.writetolog(outerror, true);
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
         } catch (IOException | InterruptedException e) {
             Log.d("Debug: ", "An IOException was caught: " + e.getMessage());

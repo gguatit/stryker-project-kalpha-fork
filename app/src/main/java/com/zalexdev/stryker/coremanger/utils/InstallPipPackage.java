@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class InstallPipPackage extends StrykerTask<String, Boolean> {
     public String exec = Core.EXECUTE;
@@ -53,7 +54,7 @@ public class InstallPipPackage extends StrykerTask<String, Boolean> {
             core.writetolog(out2, false);
             core.writetolog(outerror, true);
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
             p = process.exitValue() == 0;
         } catch (IOException | InterruptedException e) {

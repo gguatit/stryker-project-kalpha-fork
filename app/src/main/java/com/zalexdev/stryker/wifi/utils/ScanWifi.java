@@ -17,6 +17,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is used to scan for wifi networks and parse the output of the scan
@@ -37,7 +38,7 @@ public class ScanWifi extends StrykerTask<String, ArrayList<WiFINetwork>> {
         String line;
         ArrayList<WiFINetwork> result = new ArrayList<>();
         try {
-            Process process = Runtime.getRuntime().exec("su");
+            Process process = Runtime.getRuntime().exec("su -mm");
             OutputStream stdin = process.getOutputStream();
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
@@ -62,7 +63,7 @@ public class ScanWifi extends StrykerTask<String, ArrayList<WiFINetwork>> {
             core.writetolog(out2, false);
             core.writetolog(outerror, true);
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
         } catch (IOException | InterruptedException e) {
             Log.d("Debug: ", "An IOException was caught: " + e.getMessage());

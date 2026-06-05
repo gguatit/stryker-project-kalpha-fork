@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Checks if a file exists on the device
@@ -56,7 +57,7 @@ public class CheckFile extends StrykerTask<String, Boolean> {
                 logger.writeLine(line,3);
             }
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
         } catch (IOException e) {
             Log.d("Debug: ", "An IOException was caught: " + e.getMessage());

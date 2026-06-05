@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class uploads the hash to onlinehashcrack.com and returns the result
@@ -68,7 +69,7 @@ public class UploadHS extends StrykerTask<String, Integer> {
             core.writetolog(hsoutput, false);
             core.writetolog(outerror, true);
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
         } catch (IOException | InterruptedException e) {
             Log.d("Debug: ", "An IOException was caught: " + e.getMessage());

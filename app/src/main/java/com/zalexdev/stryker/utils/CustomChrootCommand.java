@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class CustomChrootCommand extends StrykerTask<String, Boolean> {
 
@@ -56,7 +57,7 @@ public class CustomChrootCommand extends StrykerTask<String, Boolean> {
             br.close();
             core.writetolog(out, false);
             core.writetolog(outerror, true);
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
             if (process.exitValue() == 0) {
                 result = true;

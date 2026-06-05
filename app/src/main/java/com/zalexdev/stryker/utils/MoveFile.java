@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Move a file from one location to another
@@ -52,7 +53,7 @@ public class MoveFile extends StrykerTask<String, Boolean> {
                 publish(line);
             }
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
             if (process.exitValue() == 0) {
                 result = true;

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is used to start the deauth attack
@@ -65,7 +66,7 @@ public class StartDeauth extends StrykerTask<String, Boolean> {
                 onProgress(line);
             }
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
         } catch (IOException e) {
             Log.d("Debug: ", "An IOException was caught: " + e.getMessage());

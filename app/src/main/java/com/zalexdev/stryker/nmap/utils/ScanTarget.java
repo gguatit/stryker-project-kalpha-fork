@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is used to scan a target
@@ -45,7 +46,7 @@ public class ScanTarget extends StrykerTask<String, Boolean> {
         Process process = null;
         Timer checkprg = null;
         try {
-            process = Runtime.getRuntime().exec("su");
+            process = Runtime.getRuntime().exec("su -mm");
             OutputStream stdin = process.getOutputStream();
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
@@ -102,7 +103,7 @@ public class ScanTarget extends StrykerTask<String, Boolean> {
             } finally {
                 checkprg.cancel();
             }
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
         } catch (IOException | InterruptedException e) {
             Log.d("Debug: ", "An IOException was caught: " + e.getMessage());

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
 
 public class ScanLocalNetwork extends StrykerTask<String, ArrayList<Device>> {
     public String exec = Core.EXECUTE;
@@ -47,7 +48,7 @@ public class ScanLocalNetwork extends StrykerTask<String, ArrayList<Device>> {
         ArrayList<Device> d = new ArrayList<>();
         try {
 
-            Process process = Runtime.getRuntime().exec("su");
+            Process process = Runtime.getRuntime().exec("su -mm");
             OutputStream stdin = process.getOutputStream();
             InputStream stderr = process.getErrorStream();
             InputStream stdout = process.getInputStream();
@@ -72,7 +73,7 @@ public class ScanLocalNetwork extends StrykerTask<String, ArrayList<Device>> {
             core.writetolog(nmapoutput, false);
             core.writetolog(outerror, true);
             br.close();
-            process.waitFor();
+            process.waitFor(60, TimeUnit.SECONDS);
             process.destroy();
             finished = true;
         } catch (IOException | InterruptedException e) {
